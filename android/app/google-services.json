@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "241878046882",
+    "firebase_url": "https://oncewingmobile.firebaseio.com",
+    "project_id": "oncewingmobile",
+    "storage_bucket": "oncewingmobile.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241878046882:android:455e0df38df9838e699ffb",
+        "android_client_info": {
+          "package_name": "com.OnceWing.mobile.OnceWing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "241878046882-kefgphrud1dfidguqu94m2oj7earn20p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClMzlWniU5Yrs-rE7wsF6QBpyWw5aSTF8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "241878046882-kefgphrud1dfidguqu94m2oj7earn20p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "241878046882-rul87efuet52oiodbi7iusgcqbibnh9l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.OnceWing.mobile.OnceWing"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
