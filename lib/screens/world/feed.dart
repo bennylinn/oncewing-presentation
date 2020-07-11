@@ -1,12 +1,8 @@
 import 'package:OnceWing/models/feed.dart';
-import 'package:OnceWing/my_flutter_app_icons.dart';
 import 'package:OnceWing/screens/world/post_card.dart';
 import 'package:OnceWing/services/feed_database_service.dart';
-import 'package:OnceWing/shared/video_player.dart';
-import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Feed extends StatefulWidget {
   @override

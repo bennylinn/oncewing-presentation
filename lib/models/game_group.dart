@@ -6,6 +6,7 @@ class GroupData {
   List<dynamic> gameids;
   List<dynamic> uids;
   List<dynamic> managers;
+  Map registration;
 
   GroupData(
       {this.groupName,
@@ -14,5 +15,6 @@ class GroupData {
       this.bio,
       this.gameids,
       this.uids,
-      this.managers});
+      this.managers,
+      this.registration});
 }

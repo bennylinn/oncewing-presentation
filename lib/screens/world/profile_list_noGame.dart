@@ -26,7 +26,10 @@ class _ProfileListState extends State<ProfileListNoGame> {
     GroupData group = widget.group;
     List<Profile> profiles = Provider.of<List<Profile>>(context) ?? [];
 
-    profiles = profiles.where((item) => group.uids.contains(item.uid)).toList();
+    if (!widget.add) {
+      profiles =
+          profiles.where((item) => group.uids.contains(item.uid)).toList();
+    }
 
     profiles.sort((a, b) => a.name.compareTo(b.name));
 

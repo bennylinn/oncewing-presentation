@@ -1,13 +1,11 @@
 import 'package:OnceWing/models/game_group.dart';
 import 'package:OnceWing/models/profile.dart';
 import 'package:OnceWing/models/user.dart';
-import 'package:OnceWing/screens/home/group_match_history.dart';
-import 'package:OnceWing/screens/home/profile_list.dart';
+import 'package:OnceWing/screens/world/group_match_history.dart';
 import 'package:OnceWing/screens/world/profile_list_noGame.dart';
+import 'package:OnceWing/screens/world/register_game.dart';
 import 'package:OnceWing/services/database.dart';
 import 'package:OnceWing/services/group_database.dart';
-import 'package:OnceWing/shared/profile_list_mini.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -52,6 +50,7 @@ class _GroupInfoState extends State<GroupInfo> {
                 elevation: 0,
                 actions: [
                   FloatingActionButton(
+                      backgroundColor: Colors.transparent,
                       child: Icon(Icons.add),
                       onPressed: () async {
                         var newUids = widget.group.uids;
@@ -70,7 +69,9 @@ class _GroupInfoState extends State<GroupInfo> {
                                 widget.group.bio,
                                 widget.group.gameids,
                                 newUids,
-                                widget.group.managers);
+                                widget.group.managers,
+                                widget.group.registration);
+                        setState(() {});
                         Navigator.pop(context);
                       })
                 ],
@@ -94,22 +95,39 @@ class _GroupInfoState extends State<GroupInfo> {
     );
   }
 
+  void popupAction(String selected) {
+    print(selected);
+    if (selected == 'Add Players') {
+      _addPlayas(prfs);
+    } else if (selected == 'Register a match') {
+      registerGroup();
+    }
+  }
+
+  void registerGroup() {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Scaffold(
+            backgroundColor: Color(0xFF737373),
+            appBar: AppBar(
+              centerTitle: true,
+              title: Text('Players', style: TextStyle(color: Colors.blue[100])),
+              elevation: 0,
+            ),
+            body: RegisterRound(
+              groupId: widget.group.groupId,
+            ),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context);
     return Container(
       color: Color(0xFF737373),
       child: Scaffold(
-        floatingActionButton: (widget.group.managers.contains(user.uid))
-            ? FloatingActionButton(
-                onPressed: () {
-                  _addPlayas(prfs);
-                },
-                child: Icon(Icons.person_add),
-              )
-            : Container(
-                height: 0,
-              ),
         resizeToAvoidBottomPadding: false,
         appBar: AppBar(
           backgroundColor: Color(0xff021420),
@@ -117,6 +135,36 @@ class _GroupInfoState extends State<GroupInfo> {
           title: Text('${widget.group.groupName}',
               style: TextStyle(color: Color(0xffC49859))),
           elevation: 0,
+          actions: [
+            PopupMenuButton(
+              onSelected: (value) {
+                if ((widget.group.managers.contains(user.uid))) {
+                  popupAction(value);
+                }
+              },
+              child: Icon(Icons.more_vert, color: Colors.white),
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                    value: 'Add Players',
+                    child: Text(
+                      'Add Players',
+                      style: TextStyle(
+                          color: widget.group.managers.contains(user.uid)
+                              ? Colors.black
+                              : Colors.grey),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'Register a match',
+                    child: Text('Register a match'),
+                  ),
+                ];
+                ;
+              },
+              offset: Offset(0, 100),
+            )
+          ],
         ),
         body: Container(
           decoration: BoxDecoration(

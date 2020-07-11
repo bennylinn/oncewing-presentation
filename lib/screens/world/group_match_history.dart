@@ -45,7 +45,6 @@ class _GroupMatchHistoryState extends State<GroupMatchHistory> {
               child: Container(
                 color: Colors.transparent,
                 child: ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
                     itemCount: games.length,
                     itemBuilder: (context, index) {
                       return Container(

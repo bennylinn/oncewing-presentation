@@ -1,5 +1,4 @@
 import 'package:OnceWing/my_flutter_app_icons.dart';
-import 'package:OnceWing/services/cache_manager.dart';
 import 'package:OnceWing/shared/video_player.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
@@ -20,14 +19,11 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   VidPlayer vp;
   List _listOfImages = [];
-  List _loadingList;
   bool imagesLoaded = false;
   bool liked = false;
   @override
   initState() {
     super.initState();
-    _loadingList = List.generate(
-        widget.urls.length, (index) => Image.asset('assets/logo.png'));
     if (widget.isImage) {
       for (int i = 0; i < widget.urls.length; i++) {
         CacheManagerr().getFileInfo(widget.urls[i]).then((value) {
@@ -79,7 +75,7 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
-    print(_listOfImages.length);
+    print(imagesLoaded);
     return Card(
         child: Column(children: <Widget>[
       Column(

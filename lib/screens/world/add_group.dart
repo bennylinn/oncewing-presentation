@@ -92,7 +92,7 @@ class _AddGroupState extends State<AddGroup> {
                       onPressed: () async {
                         if (_formKey.currentState.validate()) {
                           GroupDatabaseService().registerGroup(_groupName,
-                              _currentType, '', [user.uid], [user.uid]);
+                              _currentType, '', [user.uid], [user.uid], {});
                           Navigator.pop(context);
                         }
                       }),

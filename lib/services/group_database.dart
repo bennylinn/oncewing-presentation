@@ -12,15 +12,11 @@ class GroupDatabaseService {
   final CollectionReference groupCollection =
       Firestore.instance.collection('Groups');
 
-  Future registerGroup(
-    String groupName,
-    String type,
-    String bio,
-    List<dynamic> uids,
-    List<dynamic> managers,
-  ) async {
+  Future registerGroup(String groupName, String type, String bio,
+      List<dynamic> uids, List<dynamic> managers, Map registration) async {
     try {
-      await updateGroupData(groupName, uuid, type, bio, [], uids, managers);
+      await updateGroupData(
+          groupName, uuid, type, bio, [], uids, managers, registration);
       return uuid;
     } catch (e) {
       print(e.toString());
@@ -36,6 +32,7 @@ class GroupDatabaseService {
     List<dynamic> gameids,
     List<dynamic> uids,
     List<dynamic> managers,
+    Map registration,
   ) async {
     return await groupCollection.document(groupId).setData({
       'groupName': groupName,
@@ -45,6 +42,7 @@ class GroupDatabaseService {
       'gameids': gameids,
       'uids': uids,
       'managers': managers,
+      'registration': registration
     });
   }
 
@@ -59,6 +57,7 @@ class GroupDatabaseService {
         gameids: doc.data['gameids'] ?? [],
         uids: doc.data['uids'] ?? [],
         managers: doc.data['managers'] ?? [],
+        registration: doc.data['registration'] ?? {},
       );
     }).toList();
   }

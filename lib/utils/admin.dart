@@ -33,7 +33,7 @@ class _AdminState extends State<Admin> {
             var managers = [];
             GroupDatabaseService(groupid: 'QCchwNg3M7a91zG7XPcI')
                 .updateGroupData(
-                    groupName, groupId, type, bio, gameIds, uids, managers);
+                    groupName, groupId, type, bio, gameIds, uids, managers, {});
           },
         )
 

@@ -7,10 +7,12 @@ import 'package:OnceWing/screens/world/add_group.dart';
 import 'package:OnceWing/screens/world/feed.dart';
 import 'package:OnceWing/screens/world/group_stream_wrapper.dart';
 import 'package:OnceWing/screens/world/leaderboard.dart';
+import 'package:OnceWing/screens/world/structuredGrid.dart';
 import 'package:OnceWing/screens/world/uploader_wrapper.dart';
 import 'package:OnceWing/services/database.dart';
 import 'package:OnceWing/services/game_database.dart';
 import 'package:OnceWing/services/group_database.dart';
+import 'package:OnceWing/shared/structured_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -123,8 +125,6 @@ class _HomeState extends State<Home> {
   showView(viewName) {
     if (view == 'groups') {
       return Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height - 200,
         child: Column(
           children: [
             Center(
@@ -135,20 +135,21 @@ class _HomeState extends State<Home> {
                       fontWeight: FontWeight.w300)),
             ),
             SizedBox(height: 10),
-            MultiProvider(
-                providers: [
-                  StreamProvider<List<GameData>>.value(
-                      value: GameDatabaseService().gameDatas),
-                  StreamProvider<List<Profile>>.value(
-                      value: DatabaseService().profiles),
-                  StreamProvider<List<GroupData>>.value(
-                      value: GroupDatabaseService().groupDatas)
-                ],
-                child: Container(
-                  height: 400,
-                  width: MediaQuery.of(context).size.width,
-                  child: GroupCard(),
-                )),
+            Expanded(
+              child: MultiProvider(
+                  providers: [
+                    StreamProvider<List<GameData>>.value(
+                        value: GameDatabaseService().gameDatas),
+                    StreamProvider<List<Profile>>.value(
+                        value: DatabaseService().profiles),
+                    StreamProvider<List<GroupData>>.value(
+                        value: GroupDatabaseService().groupDatas)
+                  ],
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: GroupCard(),
+                  )),
+            ),
           ],
         ),
       );
@@ -156,27 +157,24 @@ class _HomeState extends State<Home> {
       return StreamProvider.value(
           value: DatabaseService().profiles,
           child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height - 200,
               child: Column(
-                children: [
-                  Text('Region Leaderboard',
-                      style: TextStyle(
-                          color: Color(0xffC49859),
-                          fontSize: 20,
-                          fontWeight: FontWeight.w300)),
-                  Expanded(
-                    child: Leaderboard(
-                      add: false,
-                    ),
-                  ),
-                ],
-              )));
+            children: [
+              Text('Region Leaderboard',
+                  style: TextStyle(
+                      color: Color(0xffC49859),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w300)),
+              Expanded(
+                child: Leaderboard(
+                  add: false,
+                ),
+              ),
+            ],
+          )));
     } else if (viewName == 'feed') {
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 8),
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height - 200,
+        // width: MediaQuery.of(context).size.width,
         child: Column(
           children: [
             Text('Feed',
@@ -194,53 +192,45 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // decoration: BoxDecoration(
-      //   gradient: LinearGradient(
-      //     begin: Alignment.topCenter,
-      //     end: Alignment.bottomCenter,
-      //     stops: [0.7, 1],
-      //     colors: [Color(0xff021420), Color(0xff00484F)]
-      //   )
-      // ),
-      child: Stack(children: [
-        Container(
-          margin: EdgeInsets.only(top: 15),
-          child: ListView(
-            children: <Widget>[
-              Center(
-                child: Text('OnceWing World',
-                    style: TextStyle(
-                        color: Color(0xffC49859),
-                        fontSize: 25,
-                        fontWeight: FontWeight.w300)),
-              ),
-              SizedBox(height: 10),
-              // Container(
-              //   child: MoveCamera(),
-              // ), ---------------------> Maps (don't need for now)
-              Divider(
-                height: 0,
-                thickness: 1,
-                color: Color(0xffC49859),
-              ),
-              buildImageViewButtonBar(),
-              Divider(
-                height: 10,
-                thickness: 1,
-                color: Color(0xffC49859),
-              ),
-              showView(view)
-            ],
-          ),
+    return Stack(children: [
+      Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        margin: EdgeInsets.only(top: 15),
+        child: Column(
+          children: <Widget>[
+            Center(
+              child: Text('OnceWing World',
+                  style: TextStyle(
+                      color: Color(0xffC49859),
+                      fontSize: 25,
+                      fontWeight: FontWeight.w300)),
+            ),
+            SizedBox(height: 10),
+            // Container(
+            //   child: MoveCamera(),
+            // ), ---------------------> Maps (don't need for now)
+            Divider(
+              height: 0,
+              thickness: 1,
+              color: Color(0xffC49859),
+            ),
+            buildImageViewButtonBar(),
+            Divider(
+              height: 10,
+              thickness: 1,
+              color: Color(0xffC49859),
+            ),
+            Expanded(child: showView(view))
+          ],
         ),
-        Positioned(
-          bottom: 15,
-          right: 15,
-          child: showButton(view),
-        )
-      ]),
-    );
+      ),
+      Positioned(
+        bottom: 15,
+        right: 15,
+        child: showButton(view),
+      )
+    ]);
   }
 }
 
@@ -257,12 +247,63 @@ class Events extends StatefulWidget {
 class _EventsState extends State<Events> {
   @override
   Widget build(BuildContext context) {
+    List<dynamic> regList;
+
+    void callbackRegList(String p) {
+      var newp = widget.profiles.firstWhere((profile) => profile.uid == p);
+      setState(() {
+        regList.add(newp);
+      });
+      setState(() {});
+    }
+
+    if (widget.group.registration.isNotEmpty) {
+      regList = widget.profiles
+          .where((profile) =>
+              widget.group.registration['entries'].contains(profile.uid))
+          .toList();
+    }
+
+    print(regList);
     var user = Provider.of<User>(context);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10),
-      height: 50,
       child: Column(
         children: [
+          (widget.group.registration.isNotEmpty)
+              ? Container(
+                  width: 400,
+                  decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      border: Border.all(color: Color(0xffC49859), width: 2),
+                      borderRadius: BorderRadius.circular(4),
+                      image: DecorationImage(
+                        image: AssetImage('assets/logo.png'),
+                      )),
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  height: 250,
+                  child: MediaQuery.removePadding(
+                    context: context,
+                    removeTop: true,
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      childAspectRatio: 3,
+                      children: List.generate(
+                          widget.group.registration['numPlayer'], (index) {
+                        return StructuredGridCellWorld(
+                          profile:
+                              (regList.length <= index) ? null : regList[index],
+                          groupId: widget.group.groupId,
+                          uid: user.uid,
+                          callback: callbackRegList,
+                        );
+                      }),
+                    ),
+                  ),
+                )
+              : Container(
+                  height: 0,
+                ),
           Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
