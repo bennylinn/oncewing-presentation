@@ -1,11 +1,14 @@
 import 'dart:collection';
 import 'package:OnceWing/models/game.dart';
 import 'package:OnceWing/models/profile.dart';
+import 'package:OnceWing/models/user.dart';
 import 'package:OnceWing/services/database.dart';
 import 'package:OnceWing/services/game_database.dart';
 import 'package:OnceWing/shared/animated_button.dart';
+import 'package:OnceWing/shared/game_order.dart';
 import 'package:OnceWing/shared/generate_court.dart';
 import 'package:OnceWing/shared/meth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:OnceWing/buttons/counterpage.dart';
@@ -23,13 +26,21 @@ class Eights extends StatefulWidget {
       this.gameid,
       this.numOfCourts,
       this.numOfPlayers,
-      this.numOfRounds})
+      this.numOfRounds,
+      this.queueMap,
+      this.queueFinishedMap,
+      this.inGameUidsMap,
+      this.init})
       : super(key: key);
   List<Profile> profiles;
   bool viewmode;
   int numOfPlayers;
   int numOfCourts;
   int numOfRounds;
+  Map queueMap;
+  Map queueFinishedMap;
+  Map inGameUidsMap;
+  bool init;
 
   @override
   _PlayerListState createState() => _PlayerListState();
@@ -40,6 +51,8 @@ class _PlayerListState extends State<Eights> {
   int numOfPlayers;
   int numOfCourts;
   int numOfRounds;
+  Map allGames = {};
+  bool finished = false;
 
   List<dynamic> updateEights(List<dynamic> eights, int game, int score) {
     var newEights = eights.toList();
@@ -69,8 +82,10 @@ class _PlayerListState extends State<Eights> {
   List<dynamic> uids;
   Queue queue;
   List<dynamic> inGameUids;
-  Queue<List<dynamic>> queueFinished;
+  Queue queueFinished;
   List<int> order;
+  List<List> courtHistory;
+  bool viewUpcomingToggle = true;
 
   List dequeueSetsOfUids(int numCourts, Queue gameQueue, bool reverse) {
     var l = [];
@@ -103,6 +118,51 @@ class _PlayerListState extends State<Eights> {
     return boolList;
   }
 
+  bool checkWinner(int court, List countlist) {
+    if (countlist[0] > countlist[1]) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  List scoresCourt(int court, List countlist) {
+    List scores = [];
+    for (var i = 2 * court; i < 2 * court + 2; i++) {
+      scores.add(countlist[i]);
+    }
+    return scores;
+  }
+
+  void clearScoresOnCourt(int court) {
+    for (var i = 2 * court; i < 2 * court + 2; i++) {
+      countList[i] = 0;
+    }
+  }
+
+  final _controller = PageController(
+    keepPage: true,
+  );
+
+  final _courtController = PageController(initialPage: 0, keepPage: true);
+
+  int _currentCourtValue = 0;
+
+  bool inHere(int currentCourtValue, List inGameUids, User user) {
+    return inGameUids[currentCourtValue].contains(user.uid);
+  }
+
+  Map getMapFromList(List l) {
+    // list of lists
+    // keys are string values
+    var newDict = {};
+    for (var i = 0; i < l.length; i++) {
+      newDict[i.toString()] = l[i];
+    }
+
+    return newDict;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -111,6 +171,7 @@ class _PlayerListState extends State<Eights> {
     numOfRounds = widget.numOfRounds;
 
     countList = List.generate(numOfCourts * 2, (index) => 0);
+    courtHistory = List.generate(numOfCourts, (index) => []);
 
     int numGames = numOfCourts * numOfRounds;
 
@@ -121,8 +182,7 @@ class _PlayerListState extends State<Eights> {
           profile.clan,
           profile.name,
           profile.rank,
-          List.generate(numOfRounds,
-              (index) => 0), // does not work for profile list//matchhistory
+          List.generate(numOfRounds, (index) => 0),
           profile.gamesPlayed,
           profile.status,
           profile.wins,
@@ -149,224 +209,124 @@ class _PlayerListState extends State<Eights> {
 
     uids = widget.profiles.map((i) => i.uid).toList();
 
-    if (widget.numOfPlayers == 8) {
-      order = [
-        1,
-        5,
-        7,
-        8,
-        2,
-        3,
-        4,
-        6,
-        4,
-        7,
-        6,
-        8,
-        1,
-        2,
-        3,
-        5,
-        3,
-        4,
-        5,
-        7,
-        2,
-        6,
-        1,
-        8,
-        1,
-        6,
-        4,
-        5,
-        3,
-        7,
-        2,
-        8,
-        5,
-        6,
-        2,
-        7,
-        1,
-        4,
-        3,
-        8,
-        4,
-        8,
-        2,
-        5,
-        6,
-        7,
-        1,
-        3,
-        1,
-        7,
-        2,
-        4,
-        3,
-        6,
-        5,
-        8,
-      ];
-    } else if (widget.numOfPlayers == 10) {
-      order = [
-        7,
-        2,
-        9,
-        6,
-        3,
-        5,
-        1,
-        10,
-        8,
-        3,
-        10,
-        7,
-        4,
-        1,
-        2,
-        6,
-        9,
-        4,
-        6,
-        8,
-        5,
-        2,
-        3,
-        7,
-        10,
-        5,
-        7,
-        9,
-        1,
-        3,
-        4,
-        8,
-        6,
-        1,
-        8,
-        10,
-        2,
-        4,
-        5,
-        9,
-        1,
-        9,
-        3,
-        2,
-        4,
-        6,
-        7,
-        10,
-        2,
-        10,
-        4,
-        3,
-        5,
-        7,
-        8,
-        6,
-        3,
-        6,
-        5,
-        4,
-        1,
-        8,
-        9,
-        7,
-        4,
-        7,
-        1,
-        5,
-        2,
-        9,
-        10,
-        8,
-        5,
-        8,
-        2,
-        1,
-        3,
-        10,
-        6,
-        9,
-        9,
-        3,
-        4,
-        7,
-        5,
-        2,
-        10,
-        6,
-        10,
-        4,
-        5,
-        8,
-        1,
-        3,
-        6,
-        7,
-        6,
-        5,
-        1,
-        9,
-        2,
-        4,
-        7,
-        8,
-        7,
-        1,
-        2,
-        10,
-        3,
-        5,
-        8,
-        9,
-        8,
-        2,
-        3,
-        6,
-        4,
-        1,
-        9,
-        10
-      ];
-    }
-    // need to subtract one for searching index
+    order = GameOrder().gameOrder(widget.numOfPlayers, widget.numOfRounds);
 
     List getGames(int numGames, List l, List gameOrder) {
       List games = [];
       //accumulate list of uids and places thetm in sets of 4
       for (var i = 0; i < numGames; i++) {
-        var set = i * 4;
+        var st = i * 4;
         var nlist = [
-          l[gameOrder[set] - 1],
-          l[gameOrder[set + 1] - 1],
-          l[gameOrder[set + 2] - 1],
-          l[gameOrder[set + 3] - 1]
+          l[gameOrder[st] - 1],
+          l[gameOrder[st + 1] - 1],
+          l[gameOrder[st + 2] - 1],
+          l[gameOrder[st + 3] - 1]
         ];
         games.add(nlist);
       }
-
       return games;
     }
 
     var games = getGames(numGames, uids, order);
 
-    queue = Queue.of(games);
+    // for (var i = 0; i < games.length; i++) {
+    //   allGames[i] = {
+    //     'uids': games[i],
+    //     'scores': [0, 0],
+    //     'court': -1
+    //   };
+    // } // populating all games into map
+    if (widget.init) {
+      queue = Queue.of(games);
 
-    inGameUids = dequeueSetsOfUids(numOfCourts, queue, false);
+      inGameUids = dequeueSetsOfUids(numOfCourts, queue, false);
 
-    queueFinished = Queue();
+      queueFinished = Queue();
+
+      Firestore.instance
+          .collection('games')
+          .document(widget.gameid)
+          .updateData({
+        'upcomingGames': getMapFromList(queue.toList()),
+        'finishedGames': getMapFromList(queueFinished.toList()),
+        'inGame': getMapFromList(inGameUids),
+      });
+    } else {
+      var qList = [];
+      var qfList = [];
+      var igList = [];
+
+      widget.queueMap.forEach((key, value) {
+        qList.add(value);
+      });
+      widget.queueFinishedMap.forEach((key, value) {
+        qfList.add(value);
+      });
+      widget.inGameUidsMap.forEach((key, value) {
+        igList.add(value);
+      });
+
+      queue = Queue.of(qList);
+      inGameUids = igList;
+      queueFinished = Queue.of(qfList);
+    }
   }
 
   bool endbutton = true;
 
+  void pageChanged(int index) {
+    setState(() {
+      _currentCourtValue = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    GameData deGaem = Provider.of<GameData>(context);
+    print(deGaem.gameid);
+    var qList = [];
+    var qfList = [];
+    var igList = [];
+    var aG = {};
+
+    SplayTreeMap<String, dynamic>.from(deGaem.upcomingGames,
+        (a, b) => int.parse(a).compareTo(int.parse(b))).forEach((key, value) {
+      qList.add(value);
+    });
+
+    SplayTreeMap<String, dynamic>.from(deGaem.finishedGames,
+        (a, b) => int.parse(a).compareTo(int.parse(b))).forEach((key, value) {
+      qfList.add(value);
+    });
+    SplayTreeMap<String, dynamic>.from(
+            deGaem.inGame, (a, b) => int.parse(a).compareTo(int.parse(b)))
+        .forEach((key, value) {
+      igList.add(value);
+    });
+    SplayTreeMap<String, dynamic>.from(
+            deGaem.scores, (a, b) => int.parse(a).compareTo(int.parse(b)))
+        .forEach((key, value) {
+      aG[int.parse(key)] = value;
+    });
+    setState(() {
+      queue = Queue.of(qList);
+    });
+    setState(() {
+      inGameUids = igList;
+    });
+    setState(() {
+      queueFinished = Queue.of(qfList);
+    });
+    setState(() {
+      allGames = aG;
+    });
+
     final prfs = Provider.of<List<Profile>>(context) ?? [];
+    final user = Provider.of<User>(context);
 
     List<List<Profile>> inGame;
+
+    bool ih = inHere(_currentCourtValue, inGameUids, user);
 
     Profile uidToProfile(uid) {
       Profile p =
@@ -395,7 +355,8 @@ class _PlayerListState extends State<Eights> {
     inGame = List.generate(
         inGameUids.length, (index) => uidToProfiles(inGameUids[index]));
 
-    updateRoundRobin(Profile profile, int score, int round, double elodif) {
+    updateRoundRobinProfile(
+        Profile profile, int score, int round, double elodif) {
       var wonndered = 0;
       var exp;
       if (score >= 21) {
@@ -431,316 +392,473 @@ class _PlayerListState extends State<Eights> {
       );
     }
 
+    updateRRcourt(List game, List scores, elodif, round) {
+      if (game.length == 4) {
+        updateRoundRobinProfile(game[0], scores[0], round, elodif[0]);
+        updateRoundRobinProfile(game[1], scores[0], round, elodif[0]);
+        updateRoundRobinProfile(game[2], scores[1], round, elodif[1]);
+        updateRoundRobinProfile(game[3], scores[1], round, elodif[1]);
+      }
+    }
+
     updateRRforAllCourts(List inGame, List scores, int round, List elodifs) {
       for (var i = 0; i < inGame.length; i++) {
         var temp_game = inGame[i];
         for (var j = 0; j < temp_game.length / 2; j++) {
-          updateRoundRobin(
+          updateRoundRobinProfile(
               temp_game[j * 2], scores[i * 2 + j], round, elodifs[i * 2 + j]);
-          updateRoundRobin(temp_game[j * 2 + 1], scores[i * 2 + j], round,
-              elodifs[i * 2 + j]);
+          updateRoundRobinProfile(temp_game[j * 2 + 1], scores[i * 2 + j],
+              round, elodifs[i * 2 + j]);
         }
       }
     } // gotta deal with updating rounds onto scoreboard, 2nd game should update to first round
 
-    final _controller = PageController(
-      keepPage: true,
-    );
+    void updateMapGames(
+        Map allGames, List scores, int index, int whichCourt, List uids) {
+      // var _currentGame = allGames[index];
+      var newGame = {'uids': uids, 'scores': scores, 'court': whichCourt};
+      allGames[index] = newGame;
+    }
 
     return Container(
       height: MediaQuery.of(context).size.height - 50,
-      child: PageView(
-        controller: _controller,
-        scrollDirection: Axis.vertical,
-        children: <Widget>[
-          Container(
-            height: MediaQuery.of(context).size.height - 50,
-            child: Column(
-              children: [
+      child: finished // -->
+          ? ListView.builder(
+              shrinkWrap: true,
+              physics: ClampingScrollPhysics(),
+              itemCount: allGames.length,
+              itemBuilder: (context, ind) {
+                var temp_scores = allGames[ind]['scores'];
+                return Container(
+                    height: 250,
+                    width: 400,
+                    child: GenerateCourt(
+                            courtProfiles: List.generate(
+                                4,
+                                (index) =>
+                                    uidToProfile(allGames[ind]['uids'][index])),
+                            index: index,
+                            scores: "${temp_scores[0]}-${temp_scores[1]}")
+                        .horizontal());
+              },
+            )
+          : PageView(
+              controller: _controller,
+              scrollDirection: Axis.vertical,
+              children: <Widget>[
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  child: PageView.builder(
-                    itemCount: numOfCourts,
-                    itemBuilder: (BuildContext context, int ind) {
-                      return Column(
-                        children: [
-                          GenerateCourt(
-                                  // if theres nobody on a court --> show empty court no scoreboard
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.6,
-                                  courtProfiles: inGame[ind],
-                                  countbutton: widget.viewmode
-                                      ? Container(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.15,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.6,
-                                          child: Column(
-                                            children: [
-                                              Expanded(
-                                                  child: Container(
-                                                      child: Center(
-                                                child: Text(
-                                                    inGame[ind][0]
-                                                        .eights[index]
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        color: Colors.white)),
-                                              ))),
-                                              Expanded(
-                                                  child: Container(
-                                                      child: Center(
-                                                child: Text(
-                                                    inGame[ind][2]
-                                                        .eights[index]
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        color: Colors.white)),
-                                              ))),
-                                            ],
-                                          ),
-                                        )
-                                      : CountButton(
-                                          [
-                                            countList[ind * 2],
-                                            countList[ind * 2 + 1]
-                                          ],
-                                          callback,
-                                          ind,
-                                          MediaQuery.of(context).size.height *
-                                              0.15,
-                                          MediaQuery.of(context).size.width *
-                                              0.6,
-                                        ))
-                              .vertical(),
-                          Container(
-                            height: 20,
-                            child: Text(
-                              'Court ${ind + 1}',
-                              style: TextStyle(
-                                  color: Colors.blue[100],
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w300),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                Center(
-                  child: Text(
-                      'Round ${(index < numOfRounds) ? index + 1 : 'Finished'}',
-                      style: TextStyle(fontSize: 20, color: Color(0xffC49859))),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  height: 50,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  height: MediaQuery.of(context).size.height - 50,
+                  child: Column(
                     children: [
                       Container(
-                        child: SizedBox(
-                          height: 50,
-                          child: RaisedButton(
-                              elevation: 0,
-                              onPressed: () {
-                                if (index > 0) {
-                                  if (index != numOfRounds) {
-                                    inGameUids.forEach((element) {
-                                      queue.addFirst(element);
-                                    });
-
-                                    var next = dequeueSetsOfUids(
-                                        numOfCourts, queueFinished, true);
-
-                                    inGameUids = next;
-                                  }
-                                  setState(() {
-                                    index--;
-                                  });
-                                }
-                              },
-                              color: Colors.transparent,
-                              child: Text(
-                                'Previous Match',
-                                style: TextStyle(
-                                    color: Colors.blue[100], fontSize: 20),
-                              )),
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        child: PageView.builder(
+                          controller: _courtController,
+                          onPageChanged: (index) {
+                            pageChanged(index);
+                          },
+                          itemCount: numOfCourts,
+                          itemBuilder: (BuildContext context, int ind) {
+                            return Column(
+                              children: [
+                                GenerateCourt(
+                                        // if theres nobody on a court --> show empty court no scoreboard
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.6,
+                                        courtProfiles: inGame[ind],
+                                        countbutton: (widget.viewmode && !ih)
+                                            ? Container(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.15,
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.6,
+                                                child: Center(
+                                                  child: Text('On Court',
+                                                      style: TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.white)),
+                                                ),
+                                              )
+                                            : CountButton(
+                                                [
+                                                  countList[ind * 2],
+                                                  countList[ind * 2 + 1]
+                                                ],
+                                                callback,
+                                                ind,
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.15,
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.6,
+                                              ))
+                                    .vertical(),
+                                Container(
+                                  height: 20,
+                                  child: Text(
+                                    'Court ${ind + 1}',
+                                    style: TextStyle(
+                                        color: Colors.blue[100],
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w300),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
+                      Center(
+                        child: Text(
+                            'Round ${(index < numOfRounds) ? index + 1 : numOfRounds}',
+                            style: TextStyle(
+                                fontSize: 20, color: Color(0xffC49859))),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Container(
-                        // decoration: BoxDecoration(
-                        //   border: Border(
-                        //     left: BorderSide(
-                        //       color: Colors.black,
-                        //       width: 3.0,
-                        //     ),
-                        //   )
-                        // ),
-                        child: SizedBox(
-                          height: 50,
-                          child: (index == numOfRounds)
-                              ? AnimatedButton(
-                                  onPressed: (_) {
-                                    var temp_prfs = widget.profiles;
-                                    temp_prfs.sort(
-                                        (a, b) => a.name.compareTo(b.name));
-                                    var alphauid =
-                                        temp_prfs.map((i) => i.uid).toList();
+                        height: 50,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Container(
+                            //   child: SizedBox(
+                            //     height: 50,
+                            //     child: RaisedButton(
+                            //         elevation: 0,
+                            //         onPressed: () {
+                            //           if (index > 0) {
+                            //             if (index != numOfRounds) {
+                            //               var ig =
+                            //                   inGameUids[_currentCourtValue];
+                            //               // set inGame at court index to variable
+                            //               queue.addFirst(ig);
+                            //               // take current inGame and add to queue
 
-                                    var game = Provider.of<GameData>(context);
+                            //               var next =
+                            //                   queueFinished.removeFirst();
+                            //               // set first in finished queue to var
+                            //               print(
+                            //                   'Moving set ${next[0]} ${next[1]} to inGame list');
 
-                                    GameDatabaseService().updateGameData(
-                                        widget.gameid,
-                                        alphauid,
-                                        game.type,
-                                        game.groupId,
-                                        numOfRounds,
-                                        [
-                                          ...uidToProfile(alphauid[0]).eights,
-                                          ...uidToProfile(alphauid[1]).eights,
-                                          ...uidToProfile(alphauid[2]).eights,
-                                          ...uidToProfile(alphauid[3]).eights,
-                                          ...uidToProfile(alphauid[4]).eights,
-                                          ...uidToProfile(alphauid[5]).eights,
-                                          ...uidToProfile(alphauid[6]).eights,
-                                          ...uidToProfile(alphauid[7]).eights,
-                                        ],
-                                        DateTime.now(),
-                                        false);
+                            //               for (var i = 0;
+                            //                   i < courtHistory.length;
+                            //                   i++) {
+                            //                 if (courtHistory[i]
+                            //                     .contains(next)) {
+                            //                   inGameUids[i] = next;
+                            //                   // set game where it was found on court
+                            //                 }
+                            //               }
 
-                                    setState(() {
-                                      endbutton = false;
-                                    });
-                                  },
-                                  text: 'End',
-                                  ready: endbutton,
-                                )
-                              : RaisedButton.icon(
-                                  icon: Icon(Icons.arrow_right,
-                                      color: Color(0xffC49859)),
-                                  elevation: 4,
-                                  onPressed: () {
-                                    if (index < numOfRounds - 1) {
-                                      setState(() {
-                                        index++;
-                                      });
+                            //               print('Upcoming: ${queue.length}');
+                            //               print('inGame: ${inGameUids.length}');
+                            //               print(
+                            //                   'Finished: ${queueFinished.length}');
+                            //               setState(() {});
+                            //             }
+                            //             if (index % numOfCourts == 0) {
+                            //               setState(() {
+                            //                 index--;
+                            //               });
+                            //             }
+                            //           }
+                            //         },
+                            //         color: Colors.transparent,
+                            //         child: Text(
+                            //           'Previous Match',
+                            //           style: TextStyle(
+                            //               color: Colors.blue[100],
+                            //               fontSize: 20),
+                            //         )),
+                            //   ),
+                            // ), -----> previous match button
+                            Container(
+                              child: SizedBox(
+                                height: 50,
+                                child: (queueFinished.length ==
+                                            numOfCourts * numOfRounds &&
+                                        !widget.viewmode)
+                                    ? AnimatedButton(
+                                        onPressed: (_) {
+                                          var temp_prfs = widget.profiles;
+                                          temp_prfs.sort((a, b) =>
+                                              a.name.compareTo(b.name));
+                                          var alphauid = temp_prfs
+                                              .map((i) => i.uid)
+                                              .toList();
 
-                                      inGameUids.forEach((element) {
-                                        queueFinished.addFirst(element);
-                                      });
+                                          var game =
+                                              Provider.of<GameData>(context);
 
-                                      var next = dequeueSetsOfUids(
-                                          numOfCourts, queue, false);
+                                          var parsedAllGames = {};
 
-                                      inGameUids = next;
-                                    }
-                                  },
-                                  onLongPress: () {
-                                    if (index < numOfRounds) {
-                                      var boolList = checkWinners(countList);
-                                      print(boolList);
-                                      print(countList);
-                                      // accumulate which side wins and counts into arrays
+                                          allGames.forEach((key, value) {
+                                            parsedAllGames[key.toString()] =
+                                                value;
+                                          });
 
-                                      var eloDifs =
-                                          eloDifList(inGame, boolList);
+                                          GameDatabaseService().updateGameData(
+                                            widget.gameid,
+                                            alphauid,
+                                            game.type,
+                                            game.groupId,
+                                            numOfRounds,
+                                            parsedAllGames,
+                                            DateTime.now(),
+                                            false,
+                                            game.numOfCourts,
+                                            getMapFromList(queue.toList()),
+                                            getMapFromList(
+                                                queueFinished.toList()),
+                                            getMapFromList(inGameUids),
+                                          );
+                                          print('updating to firestore...');
 
-                                      if (!widget.viewmode) {
-                                        updateRRforAllCourts(
-                                            inGame, countList, index, eloDifs);
-                                      } // write a function that updates round onto database,
-                                      // for each side
-                                      if (index < numOfRounds - 1) {
-                                        inGameUids.forEach((element) {
-                                          queueFinished.addFirst(element);
-                                        });
+                                          setState(() {
+                                            finished = true;
+                                          });
 
-                                        var next = dequeueSetsOfUids(
-                                            numOfCourts, queue, false);
+                                          setState(() {
+                                            endbutton = false;
+                                          });
+                                        },
+                                        text: 'End',
+                                        ready: endbutton,
+                                      )
+                                    : ((!widget.viewmode || ih)
+                                        ? RaisedButton.icon(
+                                            icon: Icon(Icons.arrow_right,
+                                                color: Color(0xffC49859)),
+                                            elevation: 4,
+                                            onPressed: () {},
+                                            onLongPress: () {
+                                              print(numOfRounds);
+                                              print(index);
+                                              if (index < numOfRounds) {
+                                                print('we here');
+                                                List scores = scoresCourt(
+                                                    _currentCourtValue,
+                                                    countList);
 
-                                        inGameUids = next;
-                                      }
+                                                bool side1wins = checkWinner(
+                                                    _currentCourtValue, scores);
 
-                                      setState(() {
-                                        index++;
-                                      });
-                                    }
-                                  },
-                                  label: Text(
-                                    'Next Match',
-                                    style: TextStyle(
-                                        color: Color(0xffC49859),
-                                        fontSize: 20), // fix if statement box
-                                  ),
-                                  color: Colors.red.withOpacity(0.5),
-                                ),
+                                                var eloDif = eloDifSingle(
+                                                    inGame[_currentCourtValue],
+                                                    side1wins);
+
+                                                var ig = inGameUids[
+                                                    _currentCourtValue];
+                                                queueFinished.addFirst(ig);
+                                                // move set to finished queue
+                                                // or person is on this court
+                                                updateRRcourt(
+                                                    inGame[_currentCourtValue],
+                                                    scores,
+                                                    eloDif,
+                                                    index);
+                                                updateMapGames(
+                                                    allGames,
+                                                    scores,
+                                                    allGames.length,
+                                                    _currentCourtValue,
+                                                    ig);
+
+                                                var historyCourt = courtHistory[
+                                                    _currentCourtValue];
+                                                historyCourt.add(ig);
+
+                                                courtHistory[
+                                                        _currentCourtValue] =
+                                                    historyCourt;
+
+                                                var next;
+                                                if (queue.length > 0) {
+                                                  next = queue.removeFirst();
+                                                } else {
+                                                  next = [];
+                                                }
+
+                                                inGameUids[_currentCourtValue] =
+                                                    next;
+
+                                                if (queueFinished.length %
+                                                        numOfCourts ==
+                                                    0)
+                                                  setState(() {
+                                                    index++;
+                                                  });
+
+                                                // update gamedata to firestore
+                                                var temp_prfs = widget.profiles;
+                                                temp_prfs.sort((a, b) =>
+                                                    a.name.compareTo(b.name));
+                                                var alphauid = temp_prfs
+                                                    .map((i) => i.uid)
+                                                    .toList();
+
+                                                var game =
+                                                    Provider.of<GameData>(
+                                                        context);
+
+                                                var parsedAllGames = {};
+
+                                                allGames.forEach((key, value) {
+                                                  parsedAllGames[
+                                                      key.toString()] = value;
+                                                });
+
+                                                print('checkuh here');
+                                                print(getMapFromList(
+                                                    queue.toList()));
+                                                // print(Map.fromIterable(
+                                                //     queueFinished));
+                                                // print(Map.fromIterable(inGameUids));
+
+                                                GameDatabaseService()
+                                                    .updateGameData(
+                                                  widget.gameid,
+                                                  alphauid,
+                                                  game.type,
+                                                  game.groupId,
+                                                  numOfRounds,
+                                                  parsedAllGames,
+                                                  game.date,
+                                                  true,
+                                                  game.numOfCourts,
+                                                  getMapFromList(
+                                                      queue.toList()),
+                                                  getMapFromList(
+                                                      queueFinished.toList()),
+                                                  getMapFromList(inGameUids),
+                                                );
+                                                print(countList);
+
+                                                setState(() {
+                                                  clearScoresOnCourt(
+                                                      _currentCourtValue);
+                                                });
+
+                                                print(countList);
+                                              }
+                                            },
+                                            label: Text(
+                                              'Hold To Update',
+                                              style: TextStyle(
+                                                  color: Color(0xffC49859),
+                                                  fontSize: 16),
+                                            ),
+                                            color: Colors.red.withOpacity(0.5),
+                                          )
+                                        : Container()),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-          Scaffold(
-            appBar: AppBar(
-              actions: [
-                FlatButton(
-                  child: Icon(
-                    Icons.arrow_drop_up,
-                    color: Colors.blue[100],
-                    size: 40,
+                Scaffold(
+                  appBar: AppBar(
+                    actions: [
+                      // FlatButton(
+                      //   child: Icon(
+                      //     Icons.arrow_drop_up,
+                      //     color: Colors.blue[100],
+                      //     size: 40,
+                      //   ),
+                      //   onPressed: () {
+                      //     _controller.animateTo(0,
+                      //         duration: Duration(milliseconds: 200),
+                      //         curve: Curves.ease);
+                      //   },
+                      // ),
+                      FlatButton(
+                        child: (viewUpcomingToggle)
+                            ? Icon(
+                                Icons.check_circle_outline,
+                                color: Colors.blue[100],
+                                size: 40,
+                              )
+                            : Icon(
+                                Icons.check_circle,
+                                color: Colors.blue[100],
+                                size: 40,
+                              ),
+                        onPressed: () {
+                          setState(() {
+                            viewUpcomingToggle = !viewUpcomingToggle;
+                          });
+                        },
+                      )
+                    ],
+                    backgroundColor: Colors.transparent,
+                    automaticallyImplyLeading: false,
+                    centerTitle: true,
+                    title: Text(
+                      viewUpcomingToggle ? 'Upcoming Games' : 'Finished Games',
+                      style: TextStyle(color: Colors.blue[100], fontSize: 20),
+                    ),
                   ),
-                  onPressed: () {
-                    _controller.animateTo(0,
-                        duration: Duration(milliseconds: 200),
-                        curve: Curves.ease);
-                  },
+                  backgroundColor: Colors.transparent,
+                  body: Container(
+                    margin: EdgeInsets.only(bottom: 8.0),
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    child: (viewUpcomingToggle)
+                        ? ListView.builder(
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
+                            itemCount: queue.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                  height: 250,
+                                  width: 400,
+                                  child: GenerateCourt(
+                                          courtProfiles: listUidToListProfiles(
+                                              queue)[index],
+                                          index: index,
+                                          scores: '')
+                                      .horizontal());
+                            },
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
+                            itemCount: allGames.length,
+                            itemBuilder: (context, ind) {
+                              var temp_scores = allGames[ind]['scores'];
+                              return Container(
+                                  height: 250,
+                                  width: 400,
+                                  child: GenerateCourt(
+                                          courtProfiles: List.generate(
+                                              4,
+                                              (index) => uidToProfile(
+                                                  allGames[ind]['uids']
+                                                      [index])),
+                                          index: index,
+                                          scores:
+                                              "${temp_scores[0]}-${temp_scores[1]}")
+                                      .horizontal());
+                            },
+                          ),
+                  ),
                 )
               ],
-              backgroundColor: Colors.transparent,
-              automaticallyImplyLeading: false,
-              centerTitle: true,
-              title: Text(
-                'Upcoming Games',
-                style: TextStyle(color: Colors.blue[100], fontSize: 20),
-              ),
             ),
-            backgroundColor: Colors.transparent,
-            body: Container(
-              height: 700,
-              width: 400,
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: ClampingScrollPhysics(),
-                itemCount: queue.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                      height: 250,
-                      width: 400,
-                      child: GenerateCourt(
-                              courtProfiles:
-                                  listUidToListProfiles(queue)[index],
-                              index: index,
-                              scores: '')
-                          .horizontal());
-                },
-              ),
-            ),
-          )
-        ],
-      ),
     );
   }
 }

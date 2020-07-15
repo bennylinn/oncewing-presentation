@@ -157,7 +157,13 @@ class _GroupInfoState extends State<GroupInfo> {
                   ),
                   PopupMenuItem(
                     value: 'Register a match',
-                    child: Text('Register a match'),
+                    child: Text(
+                      'Register a match',
+                      style: TextStyle(
+                          color: widget.group.managers.contains(user.uid)
+                              ? Colors.black
+                              : Colors.grey),
+                    ),
                   ),
                 ];
                 ;

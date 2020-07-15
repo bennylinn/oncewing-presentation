@@ -16,6 +16,8 @@ class GenerateCourt {
       this.scores,
       this.countbutton});
 
+  // add if doubles check
+
   Widget getBubble1() {
     return Container(
         child: PlayerBubble(
@@ -48,75 +50,79 @@ class GenerateCourt {
     return Container(
       height: height,
       width: 250,
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      height: 99,
-                      child: Container(
-                        child: PlayerBubble(
-                          profile: courtProfiles[0],
-                          small: false,
+      child: (courtProfiles.isEmpty)
+          ? Container(
+              height: 0,
+            )
+          : Column(
+              children: <Widget>[
+                Expanded(
+                  child: Container(
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Container(
+                            height: 99,
+                            child: Container(
+                              child: PlayerBubble(
+                                profile: courtProfiles[0],
+                                small: false,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        Expanded(
+                          child: Container(
+                            height: 99,
+                            child: Container(
+                              child: PlayerBubble(
+                                profile: courtProfiles[1],
+                                small: false,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Expanded(
-                    child: Container(
-                      height: 99,
-                      child: Container(
-                        child: PlayerBubble(
-                          profile: courtProfiles[1],
-                          small: false,
+                ),
+                Container(
+                    alignment: Alignment(0, 0),
+                    child: Center(
+                      child: countbutton,
+                    )),
+                Expanded(
+                  child: Container(
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Container(
+                            height: 99,
+                            child: Container(
+                              child: PlayerBubble(
+                                profile: courtProfiles[2],
+                                small: false,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        Expanded(
+                          child: Container(
+                            height: 99,
+                            child: Container(
+                              child: PlayerBubble(
+                                profile: courtProfiles[3],
+                                small: false,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ),
-          Container(
-              alignment: Alignment(0, 0),
-              child: Center(
-                child: countbutton,
-              )),
-          Expanded(
-            child: Container(
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      height: 99,
-                      child: Container(
-                        child: PlayerBubble(
-                          profile: courtProfiles[2],
-                          small: false,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 99,
-                      child: Container(
-                        child: PlayerBubble(
-                          profile: courtProfiles[3],
-                          small: false,
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
       decoration: BoxDecoration(
           image: DecorationImage(
         image: AssetImage('assets/woodCourt.png'),

@@ -1,6 +1,7 @@
 import 'package:OnceWing/models/profile.dart';
 import 'package:OnceWing/screens/home/profile_list.dart';
 import 'package:OnceWing/services/database.dart';
+import 'package:OnceWing/shared/game_order.dart';
 import 'package:OnceWing/shared/generate_court.dart';
 import 'package:OnceWing/shared/loading.dart';
 import 'package:OnceWing/shared/profile_list_mini.dart';
@@ -8,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MatchHistory extends StatefulWidget {
-  List<dynamic> scores;
+  Map scores;
   List<Profile> profiles;
   String gameid;
   MatchHistory({Key key, this.profiles, this.gameid, this.scores})
@@ -46,7 +47,7 @@ class _MatchHistory extends State<MatchHistory> {
                   padding: EdgeInsets.all(0),
                   color: Color(0xffC49859),
                   child: MiniProfileList(
-                    showScore: false,
+                    showScore: true,
                     profiles: _profiles,
                     scores: widget.scores,
                   ), // probably put the mini here
@@ -95,7 +96,7 @@ class _MatchHistory extends State<MatchHistory> {
 }
 
 class MatchHistoryWrapper extends StatefulWidget {
-  List<dynamic> scores;
+  Map scores;
   String gameid;
   List<Profile> profiles;
   MatchHistoryWrapper({Key key, this.profiles, this.gameid, this.scores})
@@ -147,7 +148,7 @@ class _MatchHistoryWrapper extends State<MatchHistoryWrapper> {
 }
 
 class CourtHistory extends StatefulWidget {
-  List<dynamic> scores;
+  Map scores;
   String gameid;
   CourtHistory({Key key, this.profiles, this.gameid, this.scores})
       : super(key: key);
@@ -158,84 +159,27 @@ class CourtHistory extends StatefulWidget {
 }
 
 class _CourtHistory extends State<CourtHistory> {
-  List<String> uids;
-  List<String> r1;
-  List<String> r2;
-  List<String> r3;
-  List<String> r4;
-  List<String> r5;
-  List<String> r6;
-  List<String> r7;
-  List<String> r8;
-  List<String> r9;
-  List<String> r10;
-  List<String> r11;
-  List<String> r12;
-  List<String> r13;
-  List<String> r14;
+  int rounds;
+  int numPlayers;
 
-  List<List<String>> queue;
+  List<dynamic> uids;
+  List<dynamic> queue;
 
   void initState() {
     super.initState();
+    numPlayers = widget.profiles.length;
+    rounds = (widget.scores.length / numPlayers).round();
 
     uids = widget.profiles.map((i) => i.uid).toList();
-    r1 = [uids[0], uids[4], uids[6], uids[7]];
-    r2 = [uids[1], uids[2], uids[3], uids[5]];
-    r3 = [uids[3], uids[6], uids[5], uids[7]];
-    r4 = [uids[0], uids[1], uids[2], uids[4]];
-    r5 = [uids[2], uids[3], uids[4], uids[6]];
-    r6 = [uids[1], uids[5], uids[0], uids[7]];
-    r7 = [uids[0], uids[5], uids[3], uids[4]];
-    r8 = [uids[2], uids[6], uids[1], uids[7]];
-    r9 = [uids[4], uids[5], uids[1], uids[6]];
-    r10 = [uids[0], uids[3], uids[2], uids[7]];
-    r11 = [uids[3], uids[7], uids[1], uids[4]];
-    r12 = [uids[5], uids[6], uids[0], uids[2]];
-    r13 = [uids[0], uids[6], uids[1], uids[3]];
-    r14 = [uids[2], uids[5], uids[4], uids[7]];
-
-    queue = [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14];
   }
 
   @override
   Widget build(BuildContext context) {
     final prfs = Provider.of<List<Profile>>(context) ?? [];
 
-    final List<dynamic> preScores = widget.scores;
+    final Map preScores = widget.scores;
 
-    final List<dynamic> scores = [
-      preScores[(0 * 7 + 0)],
-      preScores[(6 * 7 + 0)],
-      preScores[(1 * 7 + 0)],
-      preScores[(3 * 7 + 0)],
-      preScores[(3 * 7 + 1)],
-      preScores[(5 * 7 + 1)],
-      preScores[(0 * 7 + 1)],
-      preScores[(2 * 7 + 1)],
-      preScores[(2 * 7 + 2)],
-      preScores[(4 * 7 + 2)],
-      preScores[(1 * 7 + 2)],
-      preScores[(0 * 7 + 2)],
-      preScores[(0 * 7 + 3)],
-      preScores[(3 * 7 + 3)],
-      preScores[(2 * 7 + 3)],
-      preScores[(1 * 7 + 3)],
-      preScores[(4 * 7 + 4)],
-      preScores[(1 * 7 + 4)],
-      preScores[(0 * 7 + 4)],
-      preScores[(2 * 7 + 4)],
-      preScores[(3 * 7 + 5)],
-      preScores[(1 * 7 + 5)],
-      preScores[(5 * 7 + 5)],
-      preScores[(0 * 7 + 5)],
-      preScores[(0 * 7 + 6)],
-      preScores[(1 * 7 + 6)],
-      preScores[(2 * 7 + 6)],
-      preScores[(4 * 7 + 6)],
-    ];
-
-    Profile uidToProfile(uid) {
+    Profile uidToProfile(String uid) {
       Profile p =
           Profile(uid: '', name: '', clan: 'None', rank: 0, gamesPlayed: 0);
       prfs.forEach((profile) {
@@ -246,7 +190,7 @@ class _CourtHistory extends State<CourtHistory> {
       return p;
     } // goes through profile list to match a uid and returns that profile
 
-    List<Profile> uidToProfiles(List<String> uids) {
+    List<Profile> uidToProfiles(List<dynamic> uids) {
       List<Profile> list = [];
       uids.forEach((uid) {
         list.add(uidToProfile(uid));
@@ -267,7 +211,7 @@ class _CourtHistory extends State<CourtHistory> {
         child: ListView.builder(
           shrinkWrap: true,
           physics: ClampingScrollPhysics(),
-          itemCount: queue.length,
+          itemCount: preScores.length,
           itemBuilder: (context, index) {
             return Container(
                 height: 250,
@@ -279,10 +223,11 @@ class _CourtHistory extends State<CourtHistory> {
                           style: TextStyle(color: Colors.blue, fontSize: 18)),
                     ),
                     GenerateCourt(
-                            courtProfiles: listUidToListProfiles(queue)[index],
+                            courtProfiles: uidToProfiles(
+                                preScores[index.toString()]['uids']),
                             index: index,
                             scores:
-                                "${scores[(index * 2)]}-${scores[(index * 2 + 1)]}")
+                                "${preScores[index.toString()]['scores'][0]}-${preScores[index.toString()]['scores'][1]}")
                         .horizontal(),
                   ],
                 ));

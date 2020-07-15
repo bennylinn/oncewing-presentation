@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CountButton extends StatefulWidget {
-  List<int> count = [0, 0];
+  List<dynamic> count;
   Function(List<int>, int) callback;
   int index;
   double height;
@@ -18,15 +18,26 @@ class CountButton extends StatefulWidget {
 class _NumberInputWithIncrementDecrementState extends State<CountButton> {
   TextEditingController _controller1 = TextEditingController();
   TextEditingController _controller2 = TextEditingController();
+  bool saved;
 
   @override
   void initState() {
     super.initState();
     _controller1.text = "0";
-    _controller2.text = "0"; // Setting the initial value for the field.
+    _controller2.text = "0";
+    saved = true;
   }
 
-  bool saved = false;
+  @override
+  void didUpdateWidget(CountButton oldWidget) {
+    if (oldWidget.count != widget.count) {
+      // values changed, restart animation.
+      _controller1.text = widget.count[0].toString();
+      _controller2.text = widget.count[1].toString();
+      print('we updating...');
+    }
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {

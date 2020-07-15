@@ -13,6 +13,7 @@ import 'package:OnceWing/shared/scrolled_form.dart';
 import 'package:OnceWing/shared/structured_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class GameHome extends StatefulWidget {
   @override
@@ -28,6 +29,7 @@ class _GameHome extends State<GameHome> {
   int _numberOfRounds;
   int _numberOfCourts;
   String _groupId;
+  PageController _controller;
 
   @override
   initState() {
@@ -37,6 +39,9 @@ class _GameHome extends State<GameHome> {
     _event = "Doubles";
     _numberOfRounds = 7;
     _numberOfCourts = 2;
+    _controller = PageController(
+      initialPage: 0,
+    );
   }
 
   callbackProfiles(List<Profile> newProfiles) {
@@ -64,6 +69,7 @@ class _GameHome extends State<GameHome> {
                   numOfCourts: numCourts,
                   numOfPlayers: numPlayers,
                   numOfRounds: numRounds,
+                  init: true,
                 )));
       }
     }
@@ -233,7 +239,7 @@ class _GameHome extends State<GameHome> {
                       height: 60,
                       width: 120,
                       child: ScrolledForm(
-                        listItems: ['8', '10'],
+                        listItems: ['8', '10', '12'],
                         onChanged: setNumberOfPlayers,
                       ),
                     )
@@ -255,7 +261,7 @@ class _GameHome extends State<GameHome> {
                       width: 120,
                       child: ScrolledForm(
                         listItems: List.generate(
-                          2,
+                          3,
                           (index) => (index + 1).toString(),
                         ),
                         onChanged: setNumberOfCourts,
@@ -285,7 +291,7 @@ class _GameHome extends State<GameHome> {
                       width: 120,
                       child: ScrolledForm(
                         listItems: List.generate(
-                          10,
+                          11,
                           (index) => index.toString(),
                         ),
                         onChanged: setNumberOfRounds,
@@ -334,7 +340,10 @@ class _GameHome extends State<GameHome> {
                   setState(() {
                     _modeChosen = true;
                   });
-                  print("num players: " + _numberOfPlayers.toString());
+                  // print("num players: " + _numberOfPlayers.toString());
+                  _controller.animateTo(MediaQuery.of(context).size.width,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.ease);
                 },
               ),
             )
@@ -362,173 +371,214 @@ class _GameHome extends State<GameHome> {
                           fontWeight: FontWeight.w300)),
                 ),
               ),
-              GroupDropdown(
-                callback: callbackGroupId,
-              ),
               Container(
-                width: 400,
-                decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    border: Border.all(color: Color(0xffC49859), width: 2),
-                    borderRadius: BorderRadius.circular(4),
-                    image: DecorationImage(
-                      image: AssetImage('assets/logo.png'),
-                    )),
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                height: 250,
-                child: MediaQuery.removePadding(
-                  context: context,
-                  removeTop: true,
-                  child: (profiles.length == 0)
-                      ? Text('')
-                      : GridView.count(
-                          crossAxisCount: 2,
-                          childAspectRatio: 3,
-                          children: List.generate(profiles.length, (index) {
-                            return getStructuredGridCell(profiles[index]);
-                          }),
-                        ),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: 40,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    addPlayaButton(_modeChosen),
-                    RaisedButton(
-                      color: Colors.transparent,
-                      elevation: 0.0,
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: Color(0xffC49859),
-                        child: CircleAvatar(
-                            backgroundColor: Colors.blue[900],
-                            radius: 19,
-                            child: new Icon(
-                              Icons.border_clear,
-                              color: Color(0xffC49859),
-                            )),
-                      ),
-                      onPressed: () {
-                        var prfs = Provider.of<List<Profile>>(context) ?? [];
-
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              User user = Provider.of<User>(context);
-                              return AlertDialog(
-                                title: Text("Scan Player"),
-                                content: Container(
-                                    child: QR(
-                                  uid: user.uid,
-                                  callback: setQrUid,
-                                )),
-                                actions: [
-                                  FlatButton(
-                                    child: Text("Confirm"),
-                                    onPressed: () {
-                                      Profile p;
-                                      prfs.forEach((profile) {
-                                        if (_qrUIDtoAdd == profile.uid) {
-                                          p = profile;
-                                          setState(() {
-                                            profiles.add(p);
-                                          });
-                                        }
-                                      });
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  FlatButton(
-                                    child: Text("Cancel"),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                ],
-                              );
-                            });
-                      },
-                    ),
-                    FlatButton(
-                      child: Text('Clear Players',
-                          style: TextStyle(
-                              color: Colors.red[500].withOpacity(0.6),
-                              fontSize: 15)),
-                      onPressed: () {
-                        setState(() {
-                          profiles = [];
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                child: Container(
-                  child: Column(
-                    children: [
-                      Card(
-                        margin: EdgeInsets.all(8),
-                        elevation: 15,
-                        color:
-                            Colors.transparent, // Colors.blue.withOpacity(0.2),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.blue),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: ExpansionTile(
-                              leading: Container(
-                                  height: 40,
-                                  width: 40,
-                                  child: Center(
-                                      child: Image(
-                                    image: AssetImage('assets/swordshield.png'),
-                                  ))),
-                              trailing: Container(
-                                  height: 40,
-                                  width: 40,
-                                  child: Icon(
-                                    Icons.expand_more,
-                                    color: Colors.white,
-                                  )),
-                              title: Center(
-                                child: Text(
-                                  'Round Robin',
-                                  style: TextStyle(
-                                      color: Colors.blue[100], fontSize: 20),
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: PageView(
+                      physics: NeverScrollableScrollPhysics(),
+                      controller: _controller,
+                      children: [
+                        Column(
+                          children: [
+                            GroupDropdown(
+                              callback: callbackGroupId,
+                            ),
+                            Container(
+                              child: Container(
+                                child: Column(
+                                  children: [
+                                    Card(
+                                      margin: EdgeInsets.all(8),
+                                      elevation: 15,
+                                      color: Colors
+                                          .transparent, // Colors.blue.withOpacity(0.2),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.blue),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: ExpansionTile(
+                                            leading: Container(
+                                                height: 40,
+                                                width: 40,
+                                                child: Center(
+                                                    child: Image(
+                                                  image: AssetImage(
+                                                      'assets/swordshield.png'),
+                                                ))),
+                                            trailing: Container(
+                                                height: 40,
+                                                width: 40,
+                                                child: Icon(
+                                                  Icons.expand_more,
+                                                  color: Colors.white,
+                                                )),
+                                            title: Center(
+                                              child: Text(
+                                                'Round Robin',
+                                                style: TextStyle(
+                                                    color: Colors.blue[100],
+                                                    fontSize: 20),
+                                              ),
+                                            ),
+                                            children: <Widget>[
+                                              Container(
+                                                width: 400,
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 8),
+                                                height: 250,
+                                                child: MediaQuery.removePadding(
+                                                  context: context,
+                                                  removeTop: true,
+                                                  child: chooseMode(context),
+                                                ),
+                                              ),
+                                            ]),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 80,
+                                    ),
+                                  ],
                                 ),
                               ),
-                              children: <Widget>[
-                                Container(
-                                  width: 400,
-                                  padding: EdgeInsets.symmetric(horizontal: 8),
-                                  height: 250,
-                                  child: MediaQuery.removePadding(
-                                    context: context,
-                                    removeTop: true,
-                                    child: chooseMode(context),
-                                  ),
-                                ),
-                              ]),
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(
-                        height: 80,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+                        ListView(children: [
+                          AppBar(
+                            backgroundColor: Colors.transparent,
+                            leading: FlatButton(
+                              onPressed: () {
+                                _controller.animateTo(-1,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.ease);
+                              },
+                              child: Icon(Icons.arrow_back,
+                                  color: Colors.blue[100]),
+                            ),
+                            elevation: 0,
+                          ),
+                          Container(
+                            width: 400,
+                            decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.1),
+                                border: Border.all(
+                                    color: Color(0xffC49859), width: 2),
+                                borderRadius: BorderRadius.circular(4),
+                                image: DecorationImage(
+                                  image: AssetImage('assets/logo.png'),
+                                )),
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            height: 250,
+                            child: MediaQuery.removePadding(
+                              context: context,
+                              removeTop: true,
+                              child: (profiles.length == 0)
+                                  ? Text('')
+                                  : GridView.count(
+                                      crossAxisCount: 2,
+                                      childAspectRatio: 3,
+                                      children: List.generate(profiles.length,
+                                          (index) {
+                                        return getStructuredGridCell(
+                                            profiles[index]);
+                                      }),
+                                    ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            height: 40,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                addPlayaButton(_modeChosen),
+                                RaisedButton(
+                                  color: Colors.transparent,
+                                  elevation: 0.0,
+                                  child: CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: Color(0xffC49859),
+                                    child: CircleAvatar(
+                                        backgroundColor: Colors.blue[900],
+                                        radius: 19,
+                                        child: new Icon(
+                                          Icons.border_clear,
+                                          color: Color(0xffC49859),
+                                        )),
+                                  ),
+                                  onPressed: () {
+                                    var prfs =
+                                        Provider.of<List<Profile>>(context) ??
+                                            [];
+
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          User user =
+                                              Provider.of<User>(context);
+                                          return AlertDialog(
+                                            title: Text("Scan Player"),
+                                            content: Container(
+                                                child: QR(
+                                              uid: user.uid,
+                                              callback: setQrUid,
+                                            )),
+                                            actions: [
+                                              FlatButton(
+                                                child: Text("Confirm"),
+                                                onPressed: () {
+                                                  Profile p;
+                                                  prfs.forEach((profile) {
+                                                    if (_qrUIDtoAdd ==
+                                                        profile.uid) {
+                                                      p = profile;
+                                                      setState(() {
+                                                        profiles.add(p);
+                                                      });
+                                                    }
+                                                  });
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                              FlatButton(
+                                                child: Text("Cancel"),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                  },
+                                ),
+                                FlatButton(
+                                  child: Text('Clear Players',
+                                      style: TextStyle(
+                                          color:
+                                              Colors.red[500].withOpacity(0.6),
+                                          fontSize: 15)),
+                                  onPressed: () {
+                                    setState(() {
+                                      profiles = [];
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                        ])
+                      ]))
             ]),
             Positioned(
               bottom: 20,
@@ -541,9 +591,13 @@ class _GameHome extends State<GameHome> {
                     AnimatedButton(
                       text: 'Lock In',
                       onPressed: (_) {
-                        print(_groupId);
                         var ft = GameDatabaseService().registerGame(
-                            profilesToUids(profiles), 'ranked', _groupId);
+                            profilesToUids(profiles),
+                            'ranked',
+                            {},
+                            _groupId,
+                            _numberOfRounds,
+                            _numberOfCourts);
                         ft.then((value) {
                           setState(() {
                             gameid = value;
@@ -584,6 +638,11 @@ class EightsPage extends StatefulWidget {
   List<Profile> profiles;
   bool viewmode;
   String gameid;
+  Map queueMap;
+  Map queueFinishedMap;
+  Map inGameUidsMap;
+  bool init;
+
   EightsPage(
       {Key key,
       this.profiles,
@@ -591,7 +650,11 @@ class EightsPage extends StatefulWidget {
       this.gameid,
       this.numOfCourts,
       this.numOfPlayers,
-      this.numOfRounds})
+      this.numOfRounds,
+      this.queueMap,
+      this.queueFinishedMap,
+      this.inGameUidsMap,
+      this.init})
       : super(key: key);
 
   @override
@@ -677,13 +740,16 @@ class _EightsPage extends State<EightsPage> {
             style: TextStyle(color: Color(0xffC49859)),
           )),
       body: Courts(
-        profiles: _profiles,
-        viewmode: widget.viewmode,
-        gameid: widget.gameid,
-        numOfCourts: widget.numOfCourts,
-        numOfPlayers: widget.numOfPlayers,
-        numOfRounds: widget.numOfRounds,
-      ),
+          profiles: _profiles,
+          viewmode: widget.viewmode,
+          gameid: widget.gameid,
+          numOfCourts: widget.numOfCourts,
+          numOfPlayers: widget.numOfPlayers,
+          numOfRounds: widget.numOfRounds,
+          queueMap: widget.queueMap,
+          queueFinishedMap: widget.queueFinishedMap,
+          inGameUidsMap: widget.inGameUidsMap,
+          init: widget.init),
     );
   }
 }

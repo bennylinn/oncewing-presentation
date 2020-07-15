@@ -4,9 +4,13 @@ class GameData {
   String groupId;
   List<dynamic> uids;
   int round;
-  List<dynamic> scores;
+  Map scores;
   DateTime date;
   bool live;
+  int numOfCourts;
+  Map upcomingGames;
+  Map finishedGames;
+  Map inGame;
 
   GameData(
       {this.gameid,
@@ -16,5 +20,9 @@ class GameData {
       this.round,
       this.scores,
       this.date,
-      this.live});
+      this.live,
+      this.numOfCourts,
+      this.upcomingGames,
+      this.finishedGames,
+      this.inGame});
 }

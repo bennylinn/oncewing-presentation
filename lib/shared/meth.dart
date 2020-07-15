@@ -5,7 +5,6 @@ List shuffle(List items) {
 
   // Go through all elements.
   for (var i = items.length - 1; i > 0; i--) {
-
     // Pick a pseudorandom number according to the list length
     var n = random.nextInt(i + 1);
 
@@ -17,21 +16,19 @@ List shuffle(List items) {
   return items;
 }
 
-
 double average(List<double> lon) {
-  var result = lon.reduce((a, b) => a + b)/lon.length;
+  var result = lon.reduce((a, b) => a + b) / lon.length;
   return result;
 }
 
 double kmod(int gamesPlayed) {
-    var k = 8400/(pow(gamesPlayed, 1.25) + 96);
-    print(k.toString());
-    return k;
+  var k = 8400 / (pow(gamesPlayed, 1.25) + 96);
+  print(k.toString());
+  return k;
 }
 
 List<double> elo(double elo1, double elo2, double k1, double k2, bool p1_won) {
-
-  var corr_m = 2.2 / ((elo1 - elo2)*0.001 + 2.2);
+  var corr_m = 2.2 / ((elo1 - elo2) * 0.001 + 2.2);
 
   var rp1 = pow(10, (elo1 / 400));
   var rp2 = pow(10, (elo2 / 400));
@@ -42,10 +39,10 @@ List<double> elo(double elo1, double elo2, double k1, double k2, bool p1_won) {
   int s1;
   int s2;
 
-  if(p1_won){
+  if (p1_won) {
     s1 = 1;
     s2 = 0;
-  }else{
+  } else {
     s1 = 0;
     s2 = 1;
   }
@@ -56,38 +53,50 @@ List<double> elo(double elo1, double elo2, double k1, double k2, bool p1_won) {
   new_elo_1 = double.parse(new_elo_1.toStringAsFixed(2));
   new_elo_2 = double.parse(new_elo_2.toStringAsFixed(2));
 
-  print('elo1 is ' + new_elo_1.toString());
-  print('elo2 is ' + new_elo_2.toString());
+  // print('elo1 is ' + new_elo_1.toString());
+  // print('elo2 is ' + new_elo_2.toString());
 
   return [new_elo_1, new_elo_2];
-
 }
 
 elodif(game, side1wins) {
-    var edif = elo(
-      average( [ game[0].rank, game[1].rank ] ),
-      average( [ game[2].rank, game[3].rank ] ),
-      50,
-      50,
-      side1wins,
-    )[0] - average( [ game[0].rank, game[1].rank ] );
-    print(average( [ game[0].rank, game[1].rank ] ));
+  var edif = elo(
+        average([game[0].rank, game[1].rank]),
+        average([game[2].rank, game[3].rank]),
+        50,
+        50,
+        side1wins,
+      )[0] -
+      average([game[0].rank, game[1].rank]);
+  // print(average([game[0].rank, game[1].rank]));
 
-    return edif;
+  return edif;
+}
+
+eloDifList(List games, List side1winsList) {
+  // takes in a ListOfGame and returns an even ListOfDoubles of differences in ELO
+  var listOfEloDif = [];
+
+  for (var i = 0; i < games.length; i++) {
+    var game = games[i];
+
+    var edif = elodif(game, side1winsList[i]);
+
+    listOfEloDif.add(edif);
+    listOfEloDif.add(-edif);
   }
 
-  eloDifList(List games, List side1winsList) {
-    // takes in a ListOfGame and returns an even ListOfDoubles of differences in ELO
-    var listOfEloDif = [];
+  return listOfEloDif;
+}
 
-    for(var i=0; i<games.length; i++){
-      var game = games[i];
+eloDifSingle(game, bool side1wins) {
+  // takes in a single game and returns a List of ELO changes
+  var listOfEloDif = [];
 
-      var edif = elodif(game, side1winsList[i]);
+  var edif = elodif(game, side1wins);
 
-      listOfEloDif.add(edif);
-      listOfEloDif.add(-edif);
-    }
+  listOfEloDif.add(edif);
+  listOfEloDif.add(-edif);
 
-    return listOfEloDif;
-  }
+  return listOfEloDif;
+}

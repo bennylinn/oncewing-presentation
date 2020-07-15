@@ -26,63 +26,38 @@ class _ProfileTile extends State<MiniProfileTile> {
 
   Widget scores() {
     int sum;
+    int rounds;
 
-    sum = 147 - widget.profile.eights.reduce((a, b) => a + b);
+    rounds = widget.profile.eights.length;
+    sum = rounds * 21 - widget.profile.eights.reduce((a, b) => a + b);
 
     return Row(
-      children: <Widget>[
-        Container(
-          child: Text(
-            widget.profile.eights[0].toString(),
-            style: TextStyle(color: Colors.blue[100]),
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Container(
+            child: ListView.separated(
+                separatorBuilder: (BuildContext context, int index) {
+                  return SizedBox(
+                    width: 5,
+                  );
+                },
+                scrollDirection: Axis.horizontal,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: rounds,
+                itemBuilder: (context, index) {
+                  return Container(
+                    child: Center(
+                      child: Text(
+                        widget.profile.eights[index].toString(),
+                        style: TextStyle(color: Colors.blue[100]),
+                      ),
+                    ),
+                  );
+                }),
           ),
         ),
-        Spacer(),
-        Container(
-          child: Text(
-            widget.profile.eights[1].toString(),
-            style: TextStyle(color: Colors.blue[100]),
-          ),
-        ),
-        Spacer(),
-        Container(
-          child: Text(
-            widget.profile.eights[2].toString(),
-            style: TextStyle(color: Colors.blue[100]),
-          ),
-        ),
-        Spacer(),
-        Container(
-          child: Text(
-            widget.profile.eights[3].toString(),
-            style: TextStyle(color: Colors.blue[100]),
-          ),
-        ),
-        Spacer(),
-        Container(
-          child: Text(
-            widget.profile.eights[4].toString(),
-            style: TextStyle(color: Colors.blue[100]),
-          ),
-        ),
-        Spacer(),
-        Container(
-          child: Text(
-            widget.profile.eights[5].toString(),
-            style: TextStyle(color: Colors.blue[100]),
-          ),
-        ),
-        Spacer(),
-        Container(
-          child: Text(
-            widget.profile.eights[6].toString(),
-            style: TextStyle(color: Colors.blue[100]),
-          ),
-        ),
-        Spacer(),
-        Spacer(),
-        Spacer(),
-        Spacer(),
         Container(
           child: Text(
             '+$sum',

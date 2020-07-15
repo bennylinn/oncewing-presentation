@@ -14,6 +14,10 @@ class Courts extends StatefulWidget {
   int numOfPlayers;
   int numOfCourts;
   int numOfRounds;
+  Map queueMap;
+  Map queueFinishedMap;
+  Map inGameUidsMap;
+  bool init;
   Courts(
       {Key key,
       this.profiles,
@@ -21,7 +25,11 @@ class Courts extends StatefulWidget {
       this.gameid,
       this.numOfCourts,
       this.numOfPlayers,
-      this.numOfRounds})
+      this.numOfRounds,
+      this.queueMap,
+      this.queueFinishedMap,
+      this.inGameUidsMap,
+      this.init})
       : super(key: key);
 
   @override
@@ -57,13 +65,16 @@ class _Courts extends State<Courts> {
                                     GameDatabaseService(gameid: widget.gameid)
                                         .gameData,
                                 child: Eights(
-                                  profiles: widget.profiles,
-                                  viewmode: widget.viewmode,
-                                  gameid: widget.gameid,
-                                  numOfCourts: widget.numOfCourts,
-                                  numOfPlayers: widget.numOfPlayers,
-                                  numOfRounds: widget.numOfRounds,
-                                ),
+                                    profiles: widget.profiles,
+                                    viewmode: widget.viewmode,
+                                    gameid: widget.gameid,
+                                    numOfCourts: widget.numOfCourts,
+                                    numOfPlayers: widget.numOfPlayers,
+                                    numOfRounds: widget.numOfRounds,
+                                    queueMap: widget.queueMap,
+                                    queueFinishedMap: widget.queueFinishedMap,
+                                    inGameUidsMap: widget.inGameUidsMap,
+                                    init: widget.init),
                               ),
                       )),
                   Container(

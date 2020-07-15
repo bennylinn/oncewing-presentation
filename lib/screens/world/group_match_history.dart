@@ -71,11 +71,28 @@ class _GroupMatchHistoryState extends State<GroupMatchHistory> {
                                                                     games[index]
                                                                         .uids),
                                                             viewmode: true,
-                                                            numOfCourts: 2,
-                                                            numOfPlayers: 8,
-                                                            numOfRounds: 7,
+                                                            numOfCourts: games[
+                                                                    index]
+                                                                .numOfCourts,
+                                                            numOfPlayers:
+                                                                games[index]
+                                                                    .uids
+                                                                    .length,
+                                                            numOfRounds:
+                                                                games[index]
+                                                                    .round,
                                                             gameid: games[index]
                                                                 .gameid,
+                                                            queueMap: games[
+                                                                    index]
+                                                                .upcomingGames,
+                                                            queueFinishedMap:
+                                                                games[index]
+                                                                    .finishedGames,
+                                                            inGameUidsMap:
+                                                                games[index]
+                                                                    .inGame,
+                                                            init: false,
                                                           )
                                                         : MatchHistory(
                                                             gameid: games[index]
@@ -114,10 +131,10 @@ class _GroupMatchHistoryState extends State<GroupMatchHistory> {
                                   padding: EdgeInsets.symmetric(horizontal: 8),
                                   height: 250,
                                   child: MiniProfileList(
-                                    showScore: games[index].live,
+                                    showScore: true,
                                     profiles: uidToProfiles(games[index].uids),
                                     scores: games[index].scores,
-                                  ), // live property not working index issue
+                                  ),
                                 ),
                               ])),
                         ),

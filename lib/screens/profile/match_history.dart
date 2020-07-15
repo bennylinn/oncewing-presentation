@@ -93,19 +93,19 @@ class _PlayerEventsState extends State<PlayerEvents> {
                         trailing: FlatButton.icon(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (BuildContext context) => games[
-                                              index]
-                                          .live
-                                      ? EightsPage(
-                                          profiles:
-                                              uidToProfiles(games[index].uids),
-                                          viewmode: true,
-                                        )
-                                      : MatchHistory(
-                                          gameid: games[index].gameid,
-                                          profiles:
-                                              uidToProfiles(games[index].uids),
-                                          scores: games[index].scores)));
+                                  builder: (BuildContext context) =>
+                                      games[index].live
+                                          ? EightsPage(
+                                              profiles: uidToProfiles(
+                                                  games[index].uids),
+                                              viewmode: true,
+                                            )
+                                          : MatchHistory(
+                                              gameid: games[index].gameid,
+                                              profiles: uidToProfiles(
+                                                  games[index].uids),
+                                              // scores: games[index].scores
+                                            )));
                             },
                             icon: Icon(Icons.remove_red_eye,
                                 color: !games[index].live
@@ -137,7 +137,7 @@ class _PlayerEventsState extends State<PlayerEvents> {
                         child: MiniProfileList(
                           showScore: games[index].live,
                           profiles: uidToProfiles(games[index].uids),
-                          scores: games[index].scores,
+                          // scores: games[index].scores,
                         ), // live property not working index issue
                       ),
                     ])),
