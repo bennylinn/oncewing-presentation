@@ -13,7 +13,6 @@ import 'package:OnceWing/shared/scrolled_form.dart';
 import 'package:OnceWing/shared/structured_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class GameHome extends StatefulWidget {
   @override
@@ -30,6 +29,8 @@ class _GameHome extends State<GameHome> {
   int _numberOfCourts;
   String _groupId;
   PageController _controller;
+  bool _first = true;
+  final GlobalKey _expansionRR = new GlobalKey();
 
   @override
   initState() {
@@ -234,7 +235,7 @@ class _GameHome extends State<GameHome> {
                     Container(
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.red[900], width: 2),
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(5)),
                       height: 60,
                       width: 120,
@@ -255,7 +256,7 @@ class _GameHome extends State<GameHome> {
                     Container(
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.red[900], width: 2),
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(5)),
                       height: 60,
                       width: 120,
@@ -285,7 +286,7 @@ class _GameHome extends State<GameHome> {
                     Container(
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.red[900], width: 2),
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(5)),
                       height: 60,
                       width: 120,
@@ -309,7 +310,7 @@ class _GameHome extends State<GameHome> {
                     Container(
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.red[900], width: 2),
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(5)),
                       height: 60,
                       width: 120,
@@ -329,13 +330,12 @@ class _GameHome extends State<GameHome> {
               decoration: BoxDecoration(
                 border: Border.all(color: Color(0xffC49859)),
                 borderRadius: BorderRadius.circular(5),
-                color: Colors.blue[900],
+                color: Colors.blue.withOpacity(0.2),
               ),
-              child: FlatButton.icon(
+              child: FlatButton(
                 color: Colors.transparent,
-                label:
+                child:
                     Text('Confirm', style: TextStyle(color: Color(0xffC49859))),
-                icon: Icon(Icons.check_box, color: Color(0xffC49859)),
                 onPressed: () {
                   setState(() {
                     _modeChosen = true;
@@ -358,50 +358,55 @@ class _GameHome extends State<GameHome> {
         backgroundColor: Colors.transparent,
         body: Container(
           height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.only(top: 10),
           child: Stack(children: [
-            ListView(children: [
+            Column(children: [
               Container(
                 height: 50,
                 child: Center(
-                  child: Text('Game Mode',
+                  child: Text('OnceWing Play',
                       style: TextStyle(
                           color: Color(0xffC49859),
                           fontSize: 25,
                           fontWeight: FontWeight.w300)),
                 ),
               ),
-              Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: PageView(
-                      physics: NeverScrollableScrollPhysics(),
-                      controller: _controller,
-                      children: [
-                        Column(
-                          children: [
-                            GroupDropdown(
-                              callback: callbackGroupId,
-                            ),
-                            Container(
-                              child: Container(
+              Divider(
+                color: Color(0xffC49859),
+                height: 5.0,
+              ),
+              Expanded(
+                child: Container(
+                    child: PageView(
+                        physics: NeverScrollableScrollPhysics(),
+                        controller: _controller,
+                        children: [
+                      Column(
+                        children: [
+                          GroupDropdown(
+                            callback: callbackGroupId,
+                          ),
+                          Container(
+                            child: AnimatedCrossFade(
+                              duration: Duration(milliseconds: 1000),
+                              firstChild: Container(
                                 child: Column(
                                   children: [
-                                    Card(
-                                      margin: EdgeInsets.all(8),
-                                      elevation: 15,
-                                      color: Colors
-                                          .transparent, // Colors.blue.withOpacity(0.2),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.blue),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        child: ExpansionTile(
+                                    InkWell(
+                                      child: Card(
+                                        margin: EdgeInsets.all(8),
+                                        elevation: 15,
+                                        color: Colors
+                                            .transparent, // Colors.blue.withOpacity(0.2),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            border:
+                                                Border.all(color: Colors.blue),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: ListTile(
                                             leading: Container(
                                                 height: 40,
                                                 width: 40,
@@ -421,23 +426,189 @@ class _GameHome extends State<GameHome> {
                                               child: Text(
                                                 'Round Robin',
                                                 style: TextStyle(
-                                                    color: Colors.blue[100],
+                                                    color: Color(0xffC49859),
                                                     fontSize: 20),
                                               ),
                                             ),
-                                            children: <Widget>[
-                                              Container(
-                                                width: 400,
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 8),
-                                                height: 250,
-                                                child: MediaQuery.removePadding(
-                                                  context: context,
-                                                  removeTop: true,
-                                                  child: chooseMode(context),
-                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          _first = false;
+                                        });
+                                        print(_first);
+                                      },
+                                    ),
+                                    InkWell(
+                                      child: Card(
+                                        margin: EdgeInsets.all(8),
+                                        elevation: 15,
+                                        color: Colors
+                                            .transparent, // Colors.blue.withOpacity(0.2),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            border:
+                                                Border.all(color: Colors.blue),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: ListTile(
+                                            leading: Container(
+                                                height: 40,
+                                                width: 40,
+                                                child: Center(
+                                                    child: Image(
+                                                  image: AssetImage(
+                                                      'assets/swordshield.png'),
+                                                ))),
+                                            trailing: Container(
+                                                height: 40,
+                                                width: 40,
+                                                child: Icon(
+                                                  Icons.expand_more,
+                                                  color: Colors.white,
+                                                )),
+                                            title: Center(
+                                              child: Text(
+                                                'Tournament',
+                                                style: TextStyle(
+                                                    color: Color(0xffC49859),
+                                                    fontSize: 20),
                                               ),
-                                            ]),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          _first = false;
+                                        });
+                                      },
+                                    ),
+                                    Card(
+                                      margin: EdgeInsets.all(8),
+                                      elevation: 15,
+                                      color: Colors
+                                          .transparent, // Colors.blue.withOpacity(0.2),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.blue),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: ListTile(
+                                          leading: Container(
+                                              height: 40,
+                                              width: 40,
+                                              child: Center(
+                                                  child: Image(
+                                                image: AssetImage(
+                                                    'assets/swordshield.png'),
+                                              ))),
+                                          trailing: Container(
+                                              height: 40,
+                                              width: 40,
+                                              child: Icon(
+                                                Icons.expand_more,
+                                                color: Colors.white,
+                                              )),
+                                          title: Center(
+                                            child: Text(
+                                              'Ladder',
+                                              style: TextStyle(
+                                                  color: Color(0xffC49859),
+                                                  fontSize: 20),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Card(
+                                      margin: EdgeInsets.all(8),
+                                      elevation: 15,
+                                      color: Colors
+                                          .transparent, // Colors.blue.withOpacity(0.2),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.blue),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: ListTile(
+                                          leading: Container(
+                                              height: 40,
+                                              width: 40,
+                                              child: Center(
+                                                  child: Image(
+                                                image: AssetImage(
+                                                    'assets/swordshield.png'),
+                                              ))),
+                                          trailing: Container(
+                                              height: 40,
+                                              width: 40,
+                                              child: Icon(
+                                                Icons.expand_more,
+                                                color: Colors.white,
+                                              )),
+                                          title: Center(
+                                            child: Text(
+                                              'Challenge',
+                                              style: TextStyle(
+                                                  color: Color(0xffC49859),
+                                                  fontSize: 20),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Card(
+                                      margin: EdgeInsets.all(8),
+                                      elevation: 15,
+                                      color: Colors
+                                          .transparent, // Colors.blue.withOpacity(0.2),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.blue),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: ListTile(
+                                          leading: Container(
+                                              height: 40,
+                                              width: 40,
+                                              child: Center(
+                                                  child: Image(
+                                                image: AssetImage(
+                                                    'assets/swordshield.png'),
+                                              ))),
+                                          trailing: Container(
+                                              height: 40,
+                                              width: 40,
+                                              child: Icon(
+                                                Icons.expand_more,
+                                                color: Colors.white,
+                                              )),
+                                          title: Center(
+                                            child: Text(
+                                              'Free Play',
+                                              style: TextStyle(
+                                                  color: Color(0xffC49859),
+                                                  fontSize: 20),
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                     SizedBox(
@@ -446,139 +617,208 @@ class _GameHome extends State<GameHome> {
                                   ],
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        ListView(children: [
-                          AppBar(
-                            backgroundColor: Colors.transparent,
-                            leading: FlatButton(
-                              onPressed: () {
-                                _controller.animateTo(-1,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.ease);
-                              },
-                              child: Icon(Icons.arrow_back,
-                                  color: Colors.blue[100]),
-                            ),
-                            elevation: 0,
-                          ),
-                          Container(
-                            width: 400,
-                            decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
-                                border: Border.all(
-                                    color: Color(0xffC49859), width: 2),
-                                borderRadius: BorderRadius.circular(4),
-                                image: DecorationImage(
-                                  image: AssetImage('assets/logo.png'),
-                                )),
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            height: 250,
-                            child: MediaQuery.removePadding(
-                              context: context,
-                              removeTop: true,
-                              child: (profiles.length == 0)
-                                  ? Text('')
-                                  : GridView.count(
-                                      crossAxisCount: 2,
-                                      childAspectRatio: 3,
-                                      children: List.generate(profiles.length,
-                                          (index) {
-                                        return getStructuredGridCell(
-                                            profiles[index]);
-                                      }),
-                                    ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            height: 40,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                addPlayaButton(_modeChosen),
-                                RaisedButton(
-                                  color: Colors.transparent,
-                                  elevation: 0.0,
-                                  child: CircleAvatar(
-                                    radius: 20,
-                                    backgroundColor: Color(0xffC49859),
-                                    child: CircleAvatar(
-                                        backgroundColor: Colors.blue[900],
-                                        radius: 19,
-                                        child: new Icon(
-                                          Icons.border_clear,
-                                          color: Color(0xffC49859),
-                                        )),
+                              secondChild: Card(
+                                margin: EdgeInsets.all(8),
+                                elevation: 15,
+                                color: Colors
+                                    .transparent, // Colors.blue.withOpacity(0.2),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.blue),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  onPressed: () {
-                                    var prfs =
-                                        Provider.of<List<Profile>>(context) ??
-                                            [];
-
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          User user =
-                                              Provider.of<User>(context);
-                                          return AlertDialog(
-                                            title: Text("Scan Player"),
-                                            content: Container(
-                                                child: QR(
-                                              uid: user.uid,
-                                              callback: setQrUid,
-                                            )),
-                                            actions: [
-                                              FlatButton(
-                                                child: Text("Confirm"),
-                                                onPressed: () {
-                                                  Profile p;
-                                                  prfs.forEach((profile) {
-                                                    if (_qrUIDtoAdd ==
-                                                        profile.uid) {
-                                                      p = profile;
-                                                      setState(() {
-                                                        profiles.add(p);
-                                                      });
-                                                    }
-                                                  });
-                                                  Navigator.pop(context);
-                                                },
-                                              ),
-                                              FlatButton(
-                                                child: Text("Cancel"),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        });
-                                  },
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  child: ExpansionTile(
+                                      key: _expansionRR,
+                                      leading: Container(
+                                          height: 40,
+                                          width: 40,
+                                          child: Center(
+                                              child: Image(
+                                            image: AssetImage(
+                                                'assets/swordshield.png'),
+                                          ))),
+                                      trailing: Container(
+                                          height: 40,
+                                          width: 40,
+                                          child: Icon(
+                                            Icons.expand_more,
+                                            color: Colors.white,
+                                          )),
+                                      title: Center(
+                                        child: Text(
+                                          'Round Robin',
+                                          style: TextStyle(
+                                              color: Color(0xffC49859),
+                                              fontSize: 20),
+                                        ),
+                                      ),
+                                      children: <Widget>[
+                                        Container(
+                                          width: 400,
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 8),
+                                          height: 250,
+                                          child: MediaQuery.removePadding(
+                                            context: context,
+                                            removeTop: true,
+                                            child: chooseMode(context),
+                                          ),
+                                        ),
+                                      ]),
                                 ),
-                                FlatButton(
-                                  child: Text('Clear Players',
-                                      style: TextStyle(
-                                          color:
-                                              Colors.red[500].withOpacity(0.6),
-                                          fontSize: 15)),
-                                  onPressed: () {
-                                    setState(() {
-                                      profiles = [];
-                                    });
-                                  },
-                                ),
-                              ],
+                              ),
+                              crossFadeState: _first
+                                  ? CrossFadeState.showFirst
+                                  : CrossFadeState.showSecond,
                             ),
                           ),
-                          SizedBox(
-                            height: 10,
+                        ],
+                      ),
+                      ListView(children: [
+                        AppBar(
+                          backgroundColor: Colors.transparent,
+                          leading: FlatButton(
+                            onPressed: () {
+                              _controller.animateTo(-1,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.ease);
+                              setState(() {
+                                _first = true;
+                              });
+                            },
+                            child:
+                                Icon(Icons.arrow_back, color: Colors.blue[100]),
                           ),
-                        ])
-                      ]))
+                          elevation: 0,
+                          title: Text(
+                              'Round Robin Doubles: $_numberOfPlayers Players',
+                              style: TextStyle(
+                                  color: Color(0xffC49859),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w300)),
+                          centerTitle: true,
+                        ),
+                        Container(
+                          width: 400,
+                          decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.1),
+                              border: Border.all(
+                                  color: Color(0xffC49859), width: 2),
+                              borderRadius: BorderRadius.circular(4),
+                              image: DecorationImage(
+                                image: AssetImage('assets/logo.png'),
+                              )),
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          height: 250,
+                          child: MediaQuery.removePadding(
+                            context: context,
+                            removeTop: true,
+                            child: (profiles.length == 0)
+                                ? Text('')
+                                : GridView.count(
+                                    crossAxisCount: 2,
+                                    childAspectRatio: 3,
+                                    children:
+                                        List.generate(profiles.length, (index) {
+                                      return getStructuredGridCell(
+                                          profiles[index]);
+                                    }),
+                                  ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          height: 40,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              addPlayaButton(_modeChosen),
+                              RaisedButton(
+                                color: Colors.transparent,
+                                elevation: 0.0,
+                                child: CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor: Color(0xffC49859),
+                                  child: CircleAvatar(
+                                      backgroundColor: Colors.blue[900],
+                                      radius: 19,
+                                      child: new Icon(
+                                        Icons.border_clear,
+                                        color: Color(0xffC49859),
+                                      )),
+                                ),
+                                onPressed: () {
+                                  var prfs =
+                                      Provider.of<List<Profile>>(context) ?? [];
+
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        User user = Provider.of<User>(context);
+                                        return AlertDialog(
+                                          title: Text("Scan Player"),
+                                          content: Container(
+                                              child: QR(
+                                            uid: user.uid,
+                                            callback: setQrUid,
+                                          )),
+                                          actions: [
+                                            FlatButton(
+                                              child: Text("Confirm"),
+                                              onPressed: () {
+                                                Profile p;
+                                                prfs.forEach((profile) {
+                                                  if (_qrUIDtoAdd ==
+                                                      profile.uid) {
+                                                    p = profile;
+                                                    setState(() {
+                                                      profiles.add(p);
+                                                    });
+                                                  }
+                                                });
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                            FlatButton(
+                                              child: Text("Cancel"),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      });
+                                },
+                              ),
+                              FlatButton(
+                                child: Text('Clear Players',
+                                    style: TextStyle(
+                                        color: Colors.red[500].withOpacity(0.6),
+                                        fontSize: 15)),
+                                onPressed: () {
+                                  setState(() {
+                                    profiles = [];
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Center(
+                            child: RaisedButton(
+                                color: Colors.transparent,
+                                onPressed: () {},
+                                child: Text('Import Registered Game',
+                                    style: TextStyle(color: Colors.blue[100]))))
+                      ])
+                    ])),
+              )
             ]),
             Positioned(
               bottom: 20,
@@ -692,7 +932,7 @@ class _EightsPage extends State<EightsPage> {
                     showScore: true,
                     profiles: _profiles,
                     numOfRounds: widget.numOfRounds,
-                  ), //update
+                  ),
                 ),
               ),
             ),

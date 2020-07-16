@@ -4,7 +4,7 @@ class ScrolledForm extends StatefulWidget {
   void Function(String) onChanged;
   List<String> listItems;
 
-  ScrolledForm({ this.listItems, this.onChanged });
+  ScrolledForm({this.listItems, this.onChanged});
 
   @override
   _ScrolledFormState createState() => _ScrolledFormState();
@@ -30,10 +30,8 @@ class _ScrolledFormState extends State<ScrolledForm> {
         return ListTile(
           title: Center(
             child: Text('${widget.listItems[index]}',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              )
-            ), 
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Color(0xffC49859))),
             heightFactor: 1,
           ),
         );

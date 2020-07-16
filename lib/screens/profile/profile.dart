@@ -1,4 +1,5 @@
 import 'package:OnceWing/models/user.dart';
+import 'package:OnceWing/screens/modes/go_to_live_game.dart';
 import 'package:OnceWing/screens/profile/edit_profile_page.dart';
 import 'package:OnceWing/screens/profile/experience.dart';
 import 'package:OnceWing/screens/profile/match_history.dart';
@@ -6,6 +7,7 @@ import 'package:OnceWing/screens/profile/stat_column.dart';
 import 'package:OnceWing/screens/profile/stories.dart';
 import 'package:OnceWing/screens/profile/story_repo.dart';
 import 'package:OnceWing/services/database.dart';
+import 'package:OnceWing/services/game_database.dart';
 import 'package:OnceWing/services/mediacache.dart';
 import 'package:OnceWing/services/messaging.dart';
 import 'package:OnceWing/services/storage.dart';
@@ -241,20 +243,6 @@ class _ProfilePageState extends State<ProfilePage>
                         level = Experience(userData.exp).level();
 
                         return Container(
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                  stops: [
-                                0.2,
-                                0.5,
-                                0.8
-                              ],
-                                  colors: [
-                                Color(0xff050E14),
-                                Color(0xff273741),
-                                Color(0xff050E14)
-                              ])),
                           height: 400,
                           width: MediaQuery.of(context).size.width,
                           child: Column(
@@ -262,6 +250,19 @@ class _ProfilePageState extends State<ProfilePage>
                               Container(
                                 height: 200,
                                 decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight,
+                                      stops: [
+                                        0.2,
+                                        0.5,
+                                        0.8
+                                      ],
+                                      colors: [
+                                        Color(0xff050E14),
+                                        Color(0xff273741),
+                                        Color(0xff050E14)
+                                      ]),
                                   image: DecorationImage(
                                       image: (userData.clan == 'None')
                                           ? AssetImage('assets/fullDragon.png')
@@ -419,88 +420,123 @@ class _ProfilePageState extends State<ProfilePage>
                                   ),
                                 ),
                               ),
+                              Divider(
+                                color: Color(0xffC49859),
+                                thickness: 1,
+                                height: 1,
+                              ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 16.0),
                                 child: Container(
-                                  height: 120,
+                                  padding: EdgeInsets.only(left: 20),
+                                  height: 135,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Row(
-                                    children: <Widget>[
-                                      Container(
-                                        height: 100,
-                                        width: 80,
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              alignment: Alignment.center,
-                                              height: 80,
-                                              width: 80,
-                                              child: ExperienceLoader(
-                                                child: showHelmet(
-                                                    userData.rank.round()),
-                                                size: 130,
-                                                exp: userData.exp,
-                                              ),
-                                            ),
-                                            Center(
-                                              child: Text(
-                                                'Lvl $level',
-                                                style: TextStyle(
-                                                    color: Colors.blue[100]),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Column(
-                                          children: <Widget>[
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: <Widget>[
-                                                  buildStatColumn("rank",
+                                  child: Center(
+                                    child: Row(
+                                      children: <Widget>[
+                                        Container(
+                                          height: 100,
+                                          width: 80,
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                alignment: Alignment.center,
+                                                height: 80,
+                                                width: 80,
+                                                child: ExperienceLoader(
+                                                  child: showHelmet(
                                                       userData.rank.round()),
-                                                  buildStatColumn(
-                                                      "wins", userData.wins),
-                                                  buildStatColumn(
-                                                      "followers",
-                                                      userData
-                                                          .followers.length),
-                                                ],
+                                                  size: 130,
+                                                  exp: userData.exp,
+                                                ),
                                               ),
-                                            ),
-                                            Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: <Widget>[
-                                                  buildProfileFollowButton(
-                                                      userData),
-                                                  buildFollowButton(
-                                                      text: userData.status,
-                                                      backgroundcolor:
-                                                          Colors.white,
-                                                      textColor:
-                                                          (userData.status ==
-                                                                  'In Game')
-                                                              ? Colors.red
-                                                              : Colors.green,
-                                                      borderColor: Colors.grey,
-                                                      function: () {})
-                                                ]),
-                                          ],
+                                              Center(
+                                                child: Text(
+                                                  'Lvl $level',
+                                                  style: TextStyle(
+                                                      color: Colors.blue[100]),
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                         ),
-                                      )
-                                    ],
+                                        Expanded(
+                                          flex: 1,
+                                          child: Column(
+                                            children: <Widget>[
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 16),
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: <Widget>[
+                                                    buildStatColumn("rank",
+                                                        userData.rank.round()),
+                                                    buildStatColumn(
+                                                        "wins", userData.wins),
+                                                    buildStatColumn(
+                                                        "followers",
+                                                        userData
+                                                            .followers.length),
+                                                  ],
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 8.0),
+                                                child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: <Widget>[
+                                                      buildProfileFollowButton(
+                                                          userData),
+                                                      InkWell(
+                                                        child:
+                                                            buildFollowButton(
+                                                                text: userData.status ==
+                                                                        'Online'
+                                                                    ? 'Online'
+                                                                    : 'In Game',
+                                                                backgroundcolor:
+                                                                    Colors
+                                                                        .white,
+                                                                textColor: (userData
+                                                                            .status ==
+                                                                        'Online')
+                                                                    ? Colors
+                                                                        .green
+                                                                    : Colors
+                                                                        .red,
+                                                                borderColor:
+                                                                    Colors.grey,
+                                                                function: () {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .push(MaterialPageRoute(
+                                                                          builder: (BuildContext context) => StreamProvider.value(
+                                                                                value: DatabaseService().profiles,
+                                                                                child: GoLiveGame(
+                                                                                  gameid: userData.status,
+                                                                                ),
+                                                                              )));
+                                                                }),
+                                                        onTap: () {},
+                                                      )
+                                                    ]),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -816,7 +852,7 @@ class _ProfilePageState extends State<ProfilePage>
                 Container(
                   decoration: BoxDecoration(
                       border: Border(
-                          top: BorderSide(color: Color(0xffC49859), width: 3)),
+                          top: BorderSide(color: Color(0xffC49859), width: 1)),
                       gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,

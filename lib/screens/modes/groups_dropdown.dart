@@ -31,10 +31,7 @@ class _GroupDropdownState extends State<GroupDropdown> {
               key: _formKey,
               child: Column(
                 children: <Widget>[
-                  Divider(
-                    color: Colors.white,
-                    height: 30.0,
-                  ),
+                  SizedBox(height: 10.0),
                   DropdownButtonFormField(
                     dropdownColor: Colors.black,
                     decoration: InputDecoration(
@@ -63,7 +60,6 @@ class _GroupDropdownState extends State<GroupDropdown> {
                       GroupData yegroup = groups
                           .firstWhere((element) => element.groupName == val);
                       widget.callback(yegroup);
-                      print(yegroup);
                     },
                   ),
                   SizedBox(height: 10.0),

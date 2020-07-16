@@ -73,7 +73,8 @@ class _ProfileTile extends State<ProfileTile> {
       );
     } else {
       return Container(
-        width: 80,
+        width: 40,
+        height: 40,
         child: RaisedButton(
           elevation: 0,
           color: Colors.transparent,
@@ -85,9 +86,12 @@ class _ProfileTile extends State<ProfileTile> {
             Messaging().gameInviteMsg(widget.profile.fcmToken);
           },
           child: AnimatedContainer(
-            width: 80,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(3),
+              color: clicked == false ? Color(0xFFD8D8D8) : Color(0xffC49859),
+            ),
+            width: 40,
             height: 40,
-            color: clicked == false ? Color(0xFFD8D8D8) : Color(0xffC49859),
             duration: Duration(milliseconds: 300),
             child: clicked == true
                 ? Icon(

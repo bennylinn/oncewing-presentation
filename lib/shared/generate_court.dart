@@ -1,5 +1,6 @@
 import 'package:OnceWing/models/profile.dart';
 import 'package:OnceWing/screens/modes/players.dart';
+import 'package:OnceWing/screens/profile/profile_wrapper.dart';
 import 'package:flutter/material.dart';
 
 class GenerateCourt {
@@ -18,35 +19,91 @@ class GenerateCourt {
 
   // add if doubles check
 
-  Widget getBubble1() {
-    return Container(
-        child: PlayerBubble(
-      profile: courtProfiles[0],
-    ));
+  Widget getBubble1(context, isSmall) {
+    return InkWell(
+        onTap: () {
+          print('tap');
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (BuildContext context) => SafeArea(
+                    top: true,
+                    bottom: false,
+                    child: Scaffold(
+                        body: ProfileWrapper(
+                      uid: courtProfiles[0].uid,
+                    )),
+                  )));
+        },
+        child: Container(
+            child: PlayerBubble(
+          profile: courtProfiles[0],
+          small: isSmall,
+        )));
   }
 
-  Widget getBubble2() {
-    return Container(
-        child: PlayerBubble(
-      profile: courtProfiles[1],
-    ));
+  Widget getBubble2(context, isSmall) {
+    return InkWell(
+        onTap: () {
+          print('tap');
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (BuildContext context) => SafeArea(
+                    top: true,
+                    bottom: false,
+                    child: Scaffold(
+                        body: ProfileWrapper(
+                      uid: courtProfiles[1].uid,
+                    )),
+                  )));
+        },
+        child: Container(
+            child: PlayerBubble(
+          profile: courtProfiles[1],
+          small: isSmall,
+        )));
   }
 
-  Widget getBubble3() {
-    return Container(
-        child: PlayerBubble(
-      profile: courtProfiles[2],
-    ));
+  Widget getBubble3(context, isSmall) {
+    return InkWell(
+        onTap: () {
+          print('tap');
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (BuildContext context) => SafeArea(
+                    top: true,
+                    bottom: false,
+                    child: Scaffold(
+                        body: ProfileWrapper(
+                      uid: courtProfiles[2].uid,
+                    )),
+                  )));
+        },
+        child: Container(
+            child: PlayerBubble(
+          profile: courtProfiles[2],
+          small: isSmall,
+        )));
   }
 
-  Widget getBubble4() {
-    return Container(
-        child: PlayerBubble(
-      profile: courtProfiles[3],
-    ));
+  Widget getBubble4(context, isSmall) {
+    return InkWell(
+        onTap: () {
+          print('tap');
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (BuildContext context) => SafeArea(
+                    top: true,
+                    bottom: false,
+                    child: Scaffold(
+                        body: ProfileWrapper(
+                      uid: courtProfiles[3].uid,
+                    )),
+                  )));
+        },
+        child: Container(
+            child: PlayerBubble(
+          profile: courtProfiles[3],
+          small: isSmall,
+        )));
   }
 
-  Widget vertical() {
+  Widget vertical(context) {
     return Container(
       height: height,
       width: 250,
@@ -63,23 +120,13 @@ class GenerateCourt {
                         Expanded(
                           child: Container(
                             height: 99,
-                            child: Container(
-                              child: PlayerBubble(
-                                profile: courtProfiles[0],
-                                small: false,
-                              ),
-                            ),
+                            child: Container(child: getBubble1(context, false)),
                           ),
                         ),
                         Expanded(
                           child: Container(
                             height: 99,
-                            child: Container(
-                              child: PlayerBubble(
-                                profile: courtProfiles[1],
-                                small: false,
-                              ),
-                            ),
+                            child: Container(child: getBubble2(context, false)),
                           ),
                         ),
                       ],
@@ -98,23 +145,13 @@ class GenerateCourt {
                         Expanded(
                           child: Container(
                             height: 99,
-                            child: Container(
-                              child: PlayerBubble(
-                                profile: courtProfiles[2],
-                                small: false,
-                              ),
-                            ),
+                            child: Container(child: getBubble3(context, false)),
                           ),
                         ),
                         Expanded(
                           child: Container(
                             height: 99,
-                            child: Container(
-                              child: PlayerBubble(
-                                profile: courtProfiles[3],
-                                small: false,
-                              ),
-                            ),
+                            child: Container(child: getBubble4(context, false)),
                           ),
                         )
                       ],
@@ -133,7 +170,7 @@ class GenerateCourt {
     );
   }
 
-  Widget horizontal() {
+  Widget horizontal(context) {
     return Column(
       children: [
         Container(
@@ -151,22 +188,14 @@ class GenerateCourt {
                         child: Container(
                           height: 99,
                           child: Container(
-                            child: PlayerBubble(
-                              profile: courtProfiles[0],
-                              small: true,
-                            ),
+                            child: getBubble1(context, true),
                           ),
                         ),
                       ),
                       Expanded(
                         child: Container(
                           height: 99,
-                          child: Container(
-                            child: PlayerBubble(
-                              profile: courtProfiles[1],
-                              small: true,
-                            ),
-                          ),
+                          child: Container(child: getBubble2(context, true)),
                         ),
                       ),
                     ],
@@ -192,24 +221,14 @@ class GenerateCourt {
                         child: Container(
                           alignment: Alignment(-0.25, 0),
                           height: 99,
-                          child: Container(
-                            child: PlayerBubble(
-                              profile: courtProfiles[2],
-                              small: true,
-                            ),
-                          ),
+                          child: Container(child: getBubble3(context, true)),
                         ),
                       ),
                       Expanded(
                         child: Container(
                           alignment: Alignment(-0.25, 0),
                           height: 99,
-                          child: Container(
-                            child: PlayerBubble(
-                              profile: courtProfiles[3],
-                              small: true,
-                            ),
-                          ),
+                          child: Container(child: getBubble4(context, true)),
                         ),
                       )
                     ],

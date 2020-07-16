@@ -193,10 +193,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ],
                 ),
               ),
-              Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child:
-                      MaterialButton(onPressed: () {}, child: Text("Logout")))
+              // Padding(
+              //     padding: const EdgeInsets.all(16.0),
+              //     child:
+              //         MaterialButton(onPressed: () {}, child: Text("Logout")))
             ],
           );
         });

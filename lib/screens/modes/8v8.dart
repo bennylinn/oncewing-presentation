@@ -251,25 +251,14 @@ class _PlayerListState extends State<Eights> {
         'finishedGames': getMapFromList(queueFinished.toList()),
         'inGame': getMapFromList(inGameUids),
       });
-    } else {
-      var qList = [];
-      var qfList = [];
-      var igList = [];
 
-      widget.queueMap.forEach((key, value) {
-        qList.add(value);
+      widget.profiles.forEach((profile) {
+        Firestore.instance
+            .collection('profiles')
+            .document(profile.uid)
+            .updateData({'status': widget.gameid});
       });
-      widget.queueFinishedMap.forEach((key, value) {
-        qfList.add(value);
-      });
-      widget.inGameUidsMap.forEach((key, value) {
-        igList.add(value);
-      });
-
-      queue = Queue.of(qList);
-      inGameUids = igList;
-      queueFinished = Queue.of(qfList);
-    }
+    } else {}
   }
 
   bool endbutton = true;
@@ -320,6 +309,9 @@ class _PlayerListState extends State<Eights> {
     setState(() {
       allGames = aG;
     });
+    if (!widget.init) {
+      index = (queueFinished.length / widget.numOfCourts).truncate();
+    }
 
     final prfs = Provider.of<List<Profile>>(context) ?? [];
     final user = Provider.of<User>(context);
@@ -439,7 +431,7 @@ class _PlayerListState extends State<Eights> {
                                     uidToProfile(allGames[ind]['uids'][index])),
                             index: index,
                             scores: "${temp_scores[0]}-${temp_scores[1]}")
-                        .horizontal());
+                        .horizontal(context));
               },
             )
           : PageView(
@@ -501,7 +493,7 @@ class _PlayerListState extends State<Eights> {
                                                         .width *
                                                     0.6,
                                               ))
-                                    .vertical(),
+                                    .vertical(context),
                                 Container(
                                   height: 20,
                                   child: Text(
@@ -625,6 +617,14 @@ class _PlayerListState extends State<Eights> {
                                           );
                                           print('updating to firestore...');
 
+                                          widget.profiles.forEach((profile) {
+                                            Firestore.instance
+                                                .collection('profiles')
+                                                .document(profile.uid)
+                                                .updateData(
+                                                    {'status': 'Online'});
+                                          });
+
                                           setState(() {
                                             finished = true;
                                           });
@@ -663,6 +663,9 @@ class _PlayerListState extends State<Eights> {
                                                 queueFinished.addFirst(ig);
                                                 // move set to finished queue
                                                 // or person is on this court
+                                                print(
+                                                    'updating eights at index:');
+                                                print(index);
                                                 updateRRcourt(
                                                     inGame[_currentCourtValue],
                                                     scores,
@@ -831,7 +834,7 @@ class _PlayerListState extends State<Eights> {
                                               queue)[index],
                                           index: index,
                                           scores: '')
-                                      .horizontal());
+                                      .horizontal(context));
                             },
                           )
                         : ListView.builder(
@@ -852,7 +855,7 @@ class _PlayerListState extends State<Eights> {
                                           index: index,
                                           scores:
                                               "${temp_scores[0]}-${temp_scores[1]}")
-                                      .horizontal());
+                                      .horizontal(context));
                             },
                           ),
                   ),

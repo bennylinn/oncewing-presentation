@@ -89,58 +89,64 @@ class _PlayerEventsState extends State<PlayerEvents> {
                 color: Colors.transparent,
                 borderOnForeground: true,
                 child: Container(
-                    child: ExpansionTile(
-                        trailing: FlatButton.icon(
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      games[index].live
-                                          ? EightsPage(
-                                              profiles: uidToProfiles(
-                                                  games[index].uids),
-                                              viewmode: true,
-                                            )
-                                          : MatchHistory(
-                                              gameid: games[index].gameid,
-                                              profiles: uidToProfiles(
-                                                  games[index].uids),
-                                              // scores: games[index].scores
-                                            )));
-                            },
-                            icon: Icon(Icons.remove_red_eye,
-                                color: !games[index].live
-                                    ? Colors.blue[100]
-                                    : Colors.red[300]),
-                            label: Text(
-                              !games[index].live ? 'View' : 'Live',
-                              style: TextStyle(
-                                  color: !games[index].live
-                                      ? Colors.blue[100]
-                                      : Colors.red[300]),
-                            )),
-                        leading: Container(
-                          color: Colors.transparent,
-                          height: 35,
-                          width: 35,
-                          child: Image(
-                              image: AssetImage('assets/swordshield.png')),
-                        ),
-                        title: Text(
-                          '${games[index].date.year}-${games[index].date.month}-${games[index].date.day}',
-                          style: TextStyle(color: Colors.blue[100]),
-                        ),
-                        children: <Widget>[
-                      Container(
-                        width: 500,
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        height: 250,
-                        child: MiniProfileList(
-                          showScore: games[index].live,
-                          profiles: uidToProfiles(games[index].uids),
-                          // scores: games[index].scores,
-                        ), // live property not working index issue
-                      ),
-                    ])),
+                    child: ListTile(
+                  //----> ListTile for now (previously expansion)
+                  trailing: FlatButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (BuildContext context) => games[index].live
+                                ? EightsPage(
+                                    profiles: uidToProfiles(games[index].uids),
+                                    viewmode: true,
+                                    numOfCourts: games[index].numOfCourts,
+                                    numOfPlayers: games[index].uids.length,
+                                    numOfRounds: games[index].round,
+                                    gameid: games[index].gameid,
+                                    queueMap: games[index].upcomingGames,
+                                    queueFinishedMap:
+                                        games[index].finishedGames,
+                                    inGameUidsMap: games[index].inGame,
+                                    init: false,
+                                  )
+                                : MatchHistory(
+                                    gameid: games[index].gameid,
+                                    profiles: uidToProfiles(games[index].uids),
+                                    scores: games[index].scores)));
+                      },
+                      icon: Icon(Icons.remove_red_eye,
+                          color: !games[index].live
+                              ? Colors.blue[100]
+                              : Colors.red[300]),
+                      label: Text(
+                        !games[index].live ? 'View' : 'Live',
+                        style: TextStyle(
+                            color: !games[index].live
+                                ? Colors.blue[100]
+                                : Colors.red[300]),
+                      )),
+                  leading: Container(
+                    color: Colors.transparent,
+                    height: 35,
+                    width: 35,
+                    child: Image(image: AssetImage('assets/swordshield.png')),
+                  ),
+                  title: Text(
+                    '${games[index].date.year}-${games[index].date.month}-${games[index].date.day}',
+                    style: TextStyle(color: Colors.blue[100]),
+                  ),
+                  //     children: <Widget>[
+                  //   Container(
+                  //     width: 500,
+                  //     padding: EdgeInsets.symmetric(horizontal: 8),
+                  //     height: 250,
+                  //     child: MiniProfileList(
+                  //       showScore: games[index].live,
+                  //       profiles: uidToProfiles(games[index].uids),
+                  //       scores: games[index].scores,
+                  //     ), // live property not working index issue
+                  //   ),
+                  // ]
+                )),
               ),
             );
           }),

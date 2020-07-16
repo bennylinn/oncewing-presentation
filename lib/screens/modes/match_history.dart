@@ -228,7 +228,7 @@ class _CourtHistory extends State<CourtHistory> {
                             index: index,
                             scores:
                                 "${preScores[index.toString()]['scores'][0]}-${preScores[index.toString()]['scores'][1]}")
-                        .horizontal(),
+                        .horizontal(context),
                   ],
                 ));
           },

@@ -26,6 +26,12 @@ class ProfileList extends StatefulWidget {
 
 class _ProfileListState extends State<ProfileList> {
   List<Profile> playalist = [];
+  @override
+  initState() {
+    super.initState();
+    playalist.addAll(widget.profiles);
+    print(playalist);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,22 +75,6 @@ class _ProfileListState extends State<ProfileList> {
       print(playalist.length);
       widget.callback(playalist);
     }
-
-    // List<Profile> actualPlayers;
-    // List<String> uids;
-
-    // if(widget.showScore == true){
-    //   setState(() {
-    //     uids = widget.profiles.map((i) => i.uid).toList();
-    //   });
-    //   setState(() {
-    //     actualPlayers = profiles.where((item) => uids.contains(item.uid)).toList();
-    //   });
-    // }else{
-    //   setState(() {
-    //     actualPlayers = profiles;
-    //   });
-    // }
 
     return ListView.builder(
       addAutomaticKeepAlives: true,
