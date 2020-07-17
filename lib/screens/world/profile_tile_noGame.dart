@@ -103,26 +103,32 @@ class _ProfileTile extends State<ProfileTileNoGame> {
               borderOnForeground: true,
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5.0),
-                  color: Color(0xff2E2E38),
+                    borderRadius: BorderRadius.circular(5.0),
+                    color: Color(0xff2E2E38),
+                    border: Border.all(width: 3, color: Color(0xff2E2E38))),
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Color(0xffC49859), width: 2)),
+                  child: Container(
+                    child: ListTile(
+                        leading: CircleAvatar(
+                          radius: 25.0,
+                          backgroundImage: img,
+                        ),
+                        title: Text(
+                          widget.profile.name,
+                          style: TextStyle(color: Color(0xffC49859)),
+                        ),
+                        subtitle: Text(
+                          widget.profile.rank.toString(),
+                          style: TextStyle(color: Colors.blue[100]),
+                        ),
+                        trailing: Container(
+                          width: 175,
+                          child: scores(widget.add),
+                        )),
+                  ),
                 ),
-                child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 25.0,
-                      backgroundImage: img,
-                    ),
-                    title: Text(
-                      widget.profile.name,
-                      style: TextStyle(color: Color(0xffC49859)),
-                    ),
-                    subtitle: Text(
-                      widget.profile.rank.toString(),
-                      style: TextStyle(color: Colors.blue[100]),
-                    ),
-                    trailing: Container(
-                      width: 175,
-                      child: scores(widget.add),
-                    )),
               ),
             );
           } else {

@@ -45,7 +45,7 @@ class _MatchHistory extends State<MatchHistory> {
                 ),
                 body: Container(
                   padding: EdgeInsets.all(0),
-                  color: Color(0xffC49859),
+                  color: Color(0xff050E14),
                   child: MiniProfileList(
                     showScore: true,
                     profiles: _profiles,

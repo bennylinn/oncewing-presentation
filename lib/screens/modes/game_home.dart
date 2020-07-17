@@ -107,7 +107,7 @@ class _GameHome extends State<GameHome> {
                 ),
                 body: Container(
                   padding: EdgeInsets.all(0),
-                  color: Color(0xffC49859),
+                  color: Color(0xff050E14),
                   child: ProfileList(
                       showScore: false,
                       callback: callbackProfiles,
@@ -927,7 +927,7 @@ class _EightsPage extends State<EightsPage> {
                 ),
                 body: Container(
                   padding: EdgeInsets.all(0),
-                  color: Color(0xffC49859),
+                  color: Color(0xff050E14),
                   child: ProfileList(
                     showScore: true,
                     profiles: _profiles,

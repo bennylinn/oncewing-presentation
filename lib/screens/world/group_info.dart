@@ -166,7 +166,6 @@ class _GroupInfoState extends State<GroupInfo> {
                     ),
                   ),
                 ];
-                ;
               },
               offset: Offset(0, 100),
             )

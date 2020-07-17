@@ -42,7 +42,7 @@ class _ProfileTile extends State<ProfileTile> {
               child: ListView.separated(
                   separatorBuilder: (BuildContext context, int index) {
                     return SizedBox(
-                      width: 5,
+                      width: 1,
                     );
                   },
                   scrollDirection: Axis.horizontal,
@@ -50,6 +50,7 @@ class _ProfileTile extends State<ProfileTile> {
                   itemCount: widget.numOfRounds,
                   itemBuilder: (context, index) {
                     return Container(
+                      width: 20,
                       child: Center(
                         child: Text(
                           widget.profile.eights[index].toString(),
@@ -148,29 +149,32 @@ class _ProfileTile extends State<ProfileTile> {
             return Card(
               elevation: 0.0,
               color: clr,
-              borderOnForeground: true,
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5.0),
-                  color: Color(0xff2E2E38),
+                    borderRadius: BorderRadius.circular(5.0),
+                    color: Color(0xff2E2E38),
+                    border: Border.all(color: Color(0xff2E2E38), width: 3)),
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Color(0xffC49859), width: 2)),
+                  child: ListTile(
+                      leading: CircleAvatar(
+                        radius: 25.0,
+                        backgroundImage: img,
+                      ),
+                      title: Text(
+                        widget.profile.name,
+                        style: TextStyle(color: Color(0xffC49859)),
+                      ),
+                      subtitle: Text(
+                        widget.profile.rank.toString(),
+                        style: TextStyle(color: Colors.blue[100]),
+                      ),
+                      trailing: Container(
+                        width: 200,
+                        child: scores(),
+                      )),
                 ),
-                child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 25.0,
-                      backgroundImage: img,
-                    ),
-                    title: Text(
-                      widget.profile.name,
-                      style: TextStyle(color: Color(0xffC49859)),
-                    ),
-                    subtitle: Text(
-                      widget.profile.rank.toString(),
-                      style: TextStyle(color: Colors.blue[100]),
-                    ),
-                    trailing: Container(
-                      width: 175,
-                      child: scores(),
-                    )),
               ),
             );
           } else {

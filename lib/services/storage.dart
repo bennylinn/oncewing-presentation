@@ -214,6 +214,51 @@ class CloudStorageService {
       return e.toString();
     }
   }
+
+  Future<dynamic> getThreePicsUrl(int number) async {
+    try {
+      final StorageReference storageRef = FirebaseStorage.instance
+          .ref()
+          .child(uid)
+          .child('ThreePics')
+          .child('pic$number.jpg');
+      var result = await storageRef.getDownloadURL();
+
+      return result;
+    } catch (error) {
+      print(error);
+      return null;
+    }
+  }
+
+  Future uploadThreePic(int number) async {
+    try {
+      final file = await picker.getImage(source: ImageSource.gallery);
+      final filee = File(file.path);
+
+      StorageReference ref = FirebaseStorage.instance
+          .ref()
+          .child(uid)
+          .child('ThreePics')
+          .child('pic$number.jpg');
+      StorageUploadTask uploadTask =
+          ref.putFile(filee, StorageMetadata(contentType: 'image/jpg'));
+
+      StorageTaskSnapshot storageSnapshot = await uploadTask.onComplete;
+
+      var downloadUrl = await storageSnapshot.ref.getDownloadURL();
+
+      if (uploadTask.isComplete) {
+        var url = downloadUrl.toString();
+        return CloudStorageResult(
+          imageUrl: url,
+          imageFileName: 'pic$number.jpg',
+        );
+      }
+    } catch (error) {
+      print(error);
+    }
+  }
 }
 
 class CloudStorageResult {
