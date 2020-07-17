@@ -26,8 +26,6 @@ class _EmptyContainerState extends State<EmptyContainer> {
             style: TextStyle(color: Colors.white),
           ),
         ),
-        body: Center(
-          child: CacheManager(),
-        ));
+        body: Center());
   }
 }

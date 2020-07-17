@@ -1,4 +1,7 @@
 import 'package:OnceWing/models/user.dart';
+import 'package:OnceWing/screens/modes/player_bubble.dart';
+import 'package:OnceWing/screens/modes/player_bubble_xtraS.dart';
+import 'package:OnceWing/screens/profile/profile_wrapper.dart';
 import 'package:OnceWing/services/database.dart';
 import 'package:OnceWing/services/messaging.dart';
 import 'package:OnceWing/shared/loading.dart';
@@ -50,7 +53,7 @@ class _ProfileTile extends State<ProfileTile> {
                   itemCount: widget.numOfRounds,
                   itemBuilder: (context, index) {
                     return Container(
-                      width: 20,
+                      width: 18,
                       child: Center(
                         child: Text(
                           widget.profile.eights[index].toString(),
@@ -158,20 +161,43 @@ class _ProfileTile extends State<ProfileTile> {
                   decoration: BoxDecoration(
                       border: Border.all(color: Color(0xffC49859), width: 2)),
                   child: ListTile(
-                      leading: CircleAvatar(
-                        radius: 25.0,
-                        backgroundImage: img,
+                      // leading: CircleAvatar(
+                      //   radius: 25.0,
+                      //   backgroundImage: img,
+                      // ),
+                      // title: Text(
+                      //   widget.profile.name,
+                      //   style: TextStyle(color: Color(0xffC49859)),
+                      // ),
+                      // subtitle: Text(
+                      //   widget.profile.rank.toString(),
+                      //   style: TextStyle(color: Colors.blue[100]),
+                      // ),
+                      title: SizedBox(
+                        height: 60,
                       ),
-                      title: Text(
-                        widget.profile.name,
-                        style: TextStyle(color: Color(0xffC49859)),
-                      ),
-                      subtitle: Text(
-                        widget.profile.rank.toString(),
-                        style: TextStyle(color: Colors.blue[100]),
+                      leading: Container(
+                        width: 80,
+                        child: InkWell(
+                            onTap: () {
+                              print('tap');
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (BuildContext context) => SafeArea(
+                                        top: true,
+                                        bottom: false,
+                                        child: Scaffold(
+                                            body: ProfileWrapper(
+                                          uid: widget.profile.uid,
+                                        )),
+                                      )));
+                            },
+                            child: Container(
+                                child: PlayerBubbleXS(
+                              profile: widget.profile,
+                            ))),
                       ),
                       trailing: Container(
-                        width: 200,
+                        width: 190,
                         child: scores(),
                       )),
                 ),

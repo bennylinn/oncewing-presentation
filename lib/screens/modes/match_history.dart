@@ -37,7 +37,7 @@ class _MatchHistory extends State<MatchHistory> {
               child: Scaffold(
                 resizeToAvoidBottomPadding: false,
                 appBar: AppBar(
-                  backgroundColor: Color(0xff050E14),
+                  backgroundColor: Colors.black,
                   centerTitle: true,
                   title: Text('Players',
                       style: TextStyle(color: Colors.blue[100])),
@@ -82,7 +82,7 @@ class _MatchHistory extends State<MatchHistory> {
                   )),
             ),
           ],
-          backgroundColor: Color(0xff021420),
+          backgroundColor: Colors.black,
           centerTitle: true,
           elevation: 0,
           title: Text(

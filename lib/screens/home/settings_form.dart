@@ -17,7 +17,7 @@ class _SettingsFormState extends State<SettingsForm> {
   // form values
   String _currentName;
   String _currentClan;
-  double _currentRank;
+  int _currentRank;
   List<dynamic> _currentScore;
   int _currentGP;
   String _currentStatus;

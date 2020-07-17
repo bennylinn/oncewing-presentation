@@ -40,11 +40,12 @@ class _SignInState extends State<SignIn> {
                 appBar: AppBar(
                   backgroundColor: Colors.transparent,
                   elevation: 0.0,
+                  centerTitle: true,
                   title: Text(
                     'ONCEWING',
                     style: TextStyle(
-                      color: Colors.blue[100],
-                      fontSize: 20.0,
+                      color: Color(0xffC49859),
+                      fontSize: 24.0,
                       fontWeight: FontWeight.w300,
                     ),
                   ),
@@ -52,11 +53,11 @@ class _SignInState extends State<SignIn> {
                     FlatButton.icon(
                       icon: Icon(
                         Icons.person,
-                        color: Colors.blue[100],
+                        color: Colors.blue[300],
                       ),
                       label: Text(
                         'Register',
-                        style: TextStyle(color: Colors.blue[100]),
+                        style: TextStyle(color: Colors.blue[300]),
                       ),
                       onPressed: () {
                         widget.toggleView();
@@ -144,7 +145,8 @@ class _SignInState extends State<SignIn> {
                                 color: Colors.transparent,
                                 child: Text(
                                   'LOGIN',
-                                  style: TextStyle(color: Colors.blue[100]),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.blue[300]),
                                 ),
                                 onPressed: () async {
                                   if (_formKey.currentState.validate()) {
@@ -163,7 +165,7 @@ class _SignInState extends State<SignIn> {
                                 }),
                             Text(
                               'Forgot Password?',
-                              style: TextStyle(color: Colors.blue[500]),
+                              style: TextStyle(color: Colors.blue[100]),
                             ),
                             Text(error,
                                 textAlign: TextAlign.center,
@@ -172,26 +174,26 @@ class _SignInState extends State<SignIn> {
                             SizedBox(
                               height: 20,
                             ),
-                            RaisedButton(
-                                elevation: 0.0,
-                                color: Colors.transparent,
-                                child: Text(
-                                  'Create New Account',
-                                  style: TextStyle(color: Colors.purple[300]),
-                                ),
-                                onPressed: () {
-                                  widget.toggleView();
-                                }),
-                            RaisedButton(
-                                elevation: 0.0,
-                                color: Colors.transparent,
-                                child: Text(
-                                  'Anonymous Sign In',
-                                  style: TextStyle(color: Colors.purple[100]),
-                                ),
-                                onPressed: () async {
-                                  await AuthService().signInAnon();
-                                }),
+                            // RaisedButton(
+                            //     elevation: 0.0,
+                            //     color: Colors.transparent,
+                            //     child: Text(
+                            //       'Create New Account',
+                            //       style: TextStyle(color: Colors.purple[300]),
+                            //     ),
+                            //     onPressed: () {
+                            //       widget.toggleView();
+                            //     }),
+                            // RaisedButton(
+                            //     elevation: 0.0,
+                            //     color: Colors.transparent,
+                            //     child: Text(
+                            //       'Anonymous Sign In',
+                            //       style: TextStyle(color: Colors.purple[100]),
+                            //     ),
+                            //     onPressed: () async {
+                            //       await AuthService().signInAnon();
+                            //     }),
                           ],
                         )),
                   ),

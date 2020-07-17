@@ -921,7 +921,7 @@ class _EightsPage extends State<EightsPage> {
                 appBar: AppBar(
                   backgroundColor: Color(0xff050E14),
                   centerTitle: true,
-                  title: Text('Players',
+                  title: Text('Scoreboard',
                       style: TextStyle(color: Colors.blue[100])),
                   elevation: 0,
                 ),
@@ -972,7 +972,7 @@ class _EightsPage extends State<EightsPage> {
           //     },
           //   )
           // ],
-          backgroundColor: Color(0xff021420),
+          backgroundColor: Colors.black,
           centerTitle: true,
           elevation: 0,
           title: Text(

@@ -75,6 +75,7 @@ class _HomeState extends State<Home> {
   showButton(viewName) {
     if (view == 'groups') {
       return FloatingActionButton(
+          backgroundColor: Colors.blue[800],
           child: Icon(Icons.group_add),
           onPressed: () {
             showModalBottomSheet(
@@ -93,6 +94,7 @@ class _HomeState extends State<Home> {
       User user = Provider.of<User>(context);
 
       return FloatingActionButton(
+          backgroundColor: Colors.blue[800],
           child: Icon(Icons.file_upload),
           onPressed: () {
             showModalBottomSheet(
@@ -104,21 +106,9 @@ class _HomeState extends State<Home> {
                 });
           });
     } else if (view == 'leaderboards') {
-      return FloatingActionButton(
-          child: Icon(Icons.group_add),
-          onPressed: () {
-            showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  return Scaffold(
-                    appBar: AppBar(
-                      title: Text('Create Group'),
-                    ),
-                    backgroundColor: Colors.blue[900],
-                    body: AddGroup(),
-                  );
-                });
-          });
+      return Container(
+        height: 0,
+      );
     }
   }
 
@@ -304,39 +294,60 @@ class _EventsState extends State<Events> {
               : Container(
                   height: 0,
                 ),
+          Container(
+            height: 10,
+          ),
           Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              FlatButton(
-                color: Colors.green[100],
-                child: Text('Join Group'),
-                onPressed: () {
-                  var uids = widget.group.uids;
+              Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Color(0xffC49859)),
+                  borderRadius: BorderRadius.circular(5),
+                  color: Colors.blue.withOpacity(0.4),
+                ),
+                child: FlatButton(
+                  color: Colors.transparent,
+                  child:
+                      Text('Join', style: TextStyle(color: Color(0xffC49859))),
+                  onPressed: () {
+                    var uids = widget.group.uids;
 
-                  if (!widget.group.uids.contains(user.uid)) {
-                    uids.add(user.uid);
-                    Firestore.instance
-                        .collection('Groups')
-                        .document(widget.group.groupId)
-                        .updateData({'uids': uids});
-                  }
-                },
+                    if (!widget.group.uids.contains(user.uid)) {
+                      uids.add(user.uid);
+                      Firestore.instance
+                          .collection('Groups')
+                          .document(widget.group.groupId)
+                          .updateData({'uids': uids});
+                    }
+                  },
+                ),
               ),
-              FlatButton(
-                color: Colors.blue[100],
-                child: Text('View Group'),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) => SafeArea(
-                          top: true,
-                          bottom: false,
-                          child: GroupInfoWrapper(
-                            group: widget.group,
-                            profiles: widget.profiles,
-                          ))));
-                },
-              )
+              Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Color(0xffC49859)),
+                  borderRadius: BorderRadius.circular(5),
+                  color: Colors.blue.withOpacity(0.2),
+                ),
+                child: FlatButton(
+                  color: Colors.transparent,
+                  child:
+                      Text('View', style: TextStyle(color: Color(0xffC49859))),
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) => SafeArea(
+                            top: true,
+                            bottom: false,
+                            child: GroupInfoWrapper(
+                              group: widget.group,
+                              profiles: widget.profiles,
+                            ))));
+                  },
+                ),
+              ),
             ],
           ),
         ],

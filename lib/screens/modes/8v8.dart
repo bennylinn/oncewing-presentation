@@ -347,8 +347,7 @@ class _PlayerListState extends State<Eights> {
     inGame = List.generate(
         inGameUids.length, (index) => uidToProfiles(inGameUids[index]));
 
-    updateRoundRobinProfile(
-        Profile profile, int score, int round, double elodif) {
+    updateRoundRobinProfile(Profile profile, int score, int round, int elodif) {
       var wonndered = 0;
       var exp;
       if (score >= 21) {
@@ -362,7 +361,7 @@ class _PlayerListState extends State<Eights> {
         profile.uid,
         profile.clan,
         profile.name,
-        (profile.rank + elodif).round().toDouble(),
+        (profile.rank + elodif).round(),
         updateEights(profile.eights, round + 1, score),
         profile.gamesPlayed + 1,
         profile.status,
@@ -775,6 +774,7 @@ class _PlayerListState extends State<Eights> {
                 ),
                 Scaffold(
                   appBar: AppBar(
+                    elevation: 0,
                     actions: [
                       // FlatButton(
                       //   child: Icon(
@@ -793,12 +793,12 @@ class _PlayerListState extends State<Eights> {
                             ? Icon(
                                 Icons.check_circle_outline,
                                 color: Colors.blue[100],
-                                size: 40,
+                                size: 30,
                               )
                             : Icon(
                                 Icons.check_circle,
                                 color: Colors.blue[100],
-                                size: 40,
+                                size: 30,
                               ),
                         onPressed: () {
                           setState(() {
@@ -817,6 +817,9 @@ class _PlayerListState extends State<Eights> {
                   ),
                   backgroundColor: Colors.transparent,
                   body: Container(
+                    decoration: BoxDecoration(
+                        border:
+                            Border(top: BorderSide(color: Color(0xffC49859)))),
                     margin: EdgeInsets.only(bottom: 8.0),
                     height: MediaQuery.of(context).size.height,
                     width: MediaQuery.of(context).size.width,

@@ -2,7 +2,7 @@ class Profile {
   final String uid;
   final String name;
   final String clan;
-  final double rank;
+  final int rank;
   final List<dynamic> eights;
   final int gamesPlayed;
   final String status;

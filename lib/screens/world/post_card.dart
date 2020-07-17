@@ -93,15 +93,15 @@ class _PostCardState extends State<PostCard> {
               child: Column(
                 children: <Widget>[
                   Container(
-                    height: 1,
+                    height: 2,
                     width: MediaQuery.of(context).size.width,
-                    color: Colors.red,
+                    color: Color(0xffC49859),
                   ),
                   Container(
                     margin: EdgeInsets.all(0.0),
                     height: 300,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                     width: MediaQuery.of(context).size.width,
                     child: (widget.isImage)
@@ -136,9 +136,9 @@ class _PostCardState extends State<PostCard> {
                               ]),
                   ),
                   Container(
-                    height: 1,
+                    height: 2,
                     width: MediaQuery.of(context).size.width,
-                    color: Colors.red,
+                    color: Color(0xffC49859),
                   )
                 ],
               )),

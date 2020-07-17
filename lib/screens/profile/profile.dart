@@ -514,11 +514,8 @@ class _ProfilePageState extends State<ProfilePage>
                                                         InkWell(
                                                           child:
                                                               buildFollowButton(
-                                                                  text: userData
-                                                                              .status ==
-                                                                          'Online'
-                                                                      ? 'Online'
-                                                                      : 'In Game',
+                                                                  text:
+                                                                      'In Game',
                                                                   backgroundcolor:
                                                                       Colors
                                                                           .white,
@@ -526,7 +523,7 @@ class _ProfilePageState extends State<ProfilePage>
                                                                               .status ==
                                                                           'Online')
                                                                       ? Colors
-                                                                          .green
+                                                                          .grey
                                                                       : Colors
                                                                           .red,
                                                                   borderColor:

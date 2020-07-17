@@ -7,6 +7,7 @@ import 'package:OnceWing/screens/profile/profile_wrapper.dart';
 import 'package:OnceWing/screens/shop/shop.dart';
 import 'package:OnceWing/services/auth.dart';
 import 'package:OnceWing/services/database.dart';
+import 'package:OnceWing/services/storage.dart';
 import 'package:OnceWing/shared/empty_container.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -94,6 +95,7 @@ class _HomePageState extends State<HomePage>
 
   Widget buildPageView(UserData user) {
     return PageView(
+      physics: NeverScrollableScrollPhysics(),
       controller: pageController,
       onPageChanged: (index) {
         pageChanged(index);
@@ -233,7 +235,7 @@ class _HomePageState extends State<HomePage>
                         destination.icon,
                         color: Color(0xffC49859),
                       ),
-                      backgroundColor: Color(0xff2E2E38),
+                      backgroundColor: Colors.black,
                       title: Center(
                           child: Text(
                         destination.title,

@@ -40,11 +40,12 @@ class _RegisterState extends State<Register> {
                 appBar: AppBar(
                   backgroundColor: Colors.transparent,
                   elevation: 0.0,
+                  centerTitle: true,
                   title: Text(
                     'ONCEWING',
                     style: TextStyle(
-                      color: Colors.blue[100],
-                      fontSize: 20.0,
+                      color: Color(0xffC49859),
+                      fontSize: 24.0,
                       fontWeight: FontWeight.w300,
                     ),
                   ),
@@ -52,11 +53,11 @@ class _RegisterState extends State<Register> {
                     FlatButton.icon(
                       icon: Icon(
                         Icons.person,
-                        color: Colors.blue[100],
+                        color: Colors.blue[300],
                       ),
                       label: Text(
                         'Login',
-                        style: TextStyle(color: Colors.blue[100]),
+                        style: TextStyle(color: Colors.blue[300]),
                       ),
                       onPressed: () {
                         widget.toggleView();
@@ -148,7 +149,8 @@ class _RegisterState extends State<Register> {
                                   color: Colors.transparent,
                                   child: Text(
                                     'REGISTER',
-                                    style: TextStyle(color: Colors.blue[100]),
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.blue[300]),
                                   ),
                                   onPressed: () async {
                                     if (_formKey.currentState.validate()) {

@@ -6,7 +6,7 @@ class Anon {
     Profile prf = Profile(
         uid: index.toString(),
         name: "Player $index",
-        rank: 1500.0,
+        rank: 1500,
         eights: [0, 0, 0, 0, 0, 0, 0],
         gamesPlayed: 0);
     return prf;

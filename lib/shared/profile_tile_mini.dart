@@ -1,4 +1,5 @@
 import 'package:OnceWing/models/user.dart';
+import 'package:OnceWing/screens/modes/player_bubble_xtraS.dart';
 import 'package:OnceWing/screens/profile/profile.dart';
 import 'package:OnceWing/screens/profile/profile_wrapper.dart';
 import 'package:OnceWing/services/database.dart';
@@ -40,7 +41,7 @@ class _ProfileTile extends State<MiniProfileTile> {
             child: ListView.separated(
                 separatorBuilder: (BuildContext context, int index) {
                   return SizedBox(
-                    width: 5,
+                    width: 1,
                   );
                 },
                 scrollDirection: Axis.horizontal,
@@ -48,7 +49,7 @@ class _ProfileTile extends State<MiniProfileTile> {
                 itemCount: rounds,
                 itemBuilder: (context, index) {
                   return Container(
-                    width: 10,
+                    width: 18,
                     child: Center(
                       child: Text(
                         widget.profile.eights[index].toString(),
@@ -105,32 +106,55 @@ class _ProfileTile extends State<MiniProfileTile> {
                   decoration: BoxDecoration(
                       border: Border.all(color: Color(0xffC49859), width: 2)),
                   child: ListTile(
+                    // title: Container(
+                    //   width: MediaQuery.of(context).size.width / 5,
+                    //   child: InkWell(
+                    //       onTap: () {
+                    //         Navigator.of(context).push(MaterialPageRoute(
+                    //             builder: (BuildContext context) => Scaffold(
+                    //                     body: ProfileWrapper(
+                    //                   uid: widget.profile.uid,
+                    //                 ))));
+                    //       },
+                    //       child: Text(
+                    //         widget.profile.name,
+                    //         style: TextStyle(color: Color(0xffC49859)),
+                    //       )),
+                    // ),
+                    // subtitle: Text(
+                    //   widget.profile.rank.toString(),
+                    //   style: TextStyle(color: Colors.blue[100]),
+                    // ),
                     title: Container(
-                      width: MediaQuery.of(context).size.width / 5,
+                      height: 60,
+                    ),
+                    leading: Container(
+                      width: 80,
                       child: InkWell(
                           onTap: () {
+                            print('tap');
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (BuildContext context) => Scaffold(
-                                        body: ProfileWrapper(
-                                      uid: widget.profile.uid,
-                                    ))));
+                                builder: (BuildContext context) => SafeArea(
+                                      top: true,
+                                      bottom: false,
+                                      child: Scaffold(
+                                          body: ProfileWrapper(
+                                        uid: widget.profile.uid,
+                                      )),
+                                    )));
                           },
-                          child: Text(
-                            widget.profile.name,
-                            style: TextStyle(color: Color(0xffC49859)),
-                          )),
+                          child: Container(
+                              child: PlayerBubbleXS(
+                            profile: widget.profile,
+                          ))),
                     ),
-                    subtitle: Text(
-                      widget.profile.rank.toString(),
-                      style: TextStyle(color: Colors.blue[100]),
-                    ),
-                    trailing: Container(width: 150, child: scores()),
+                    trailing: Container(width: 190, child: scores()),
                   ),
                 ),
               ),
             );
           } else {
-            return Loading();
+            return CircularProgressIndicator();
           }
         });
   }

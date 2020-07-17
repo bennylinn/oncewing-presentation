@@ -16,7 +16,7 @@ class DatabaseService {
     String uid,
     String clan,
     String name,
-    double rank,
+    int rank,
     List<dynamic> eights,
     int gamesPlayed,
     String status,
@@ -95,12 +95,12 @@ class DatabaseService {
   // userData from snapshot
   UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
     return UserData(
-      uid: uid,
-      name: snapshot.data['name'],
-      clan: snapshot.data['clan'],
-      rank: snapshot.data['rank'],
-      eights: snapshot.data['eights'],
-      gamesPlayed: snapshot.data['gamesPlayed'],
+      uid: uid ?? '',
+      name: snapshot.data['name'] ?? '',
+      clan: snapshot.data['clan'] ?? '',
+      rank: snapshot.data['rank'] ?? 0.0,
+      eights: snapshot.data['eights'] ?? [],
+      gamesPlayed: snapshot.data['gamesPlayed'] ?? 0,
       status: snapshot.data['status'] ?? '',
       wins: snapshot.data['wins'] ?? 0,
       photoUrl: snapshot.data['photoUrl'] ?? '',

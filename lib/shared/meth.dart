@@ -16,8 +16,8 @@ List shuffle(List items) {
   return items;
 }
 
-double average(List<double> lon) {
-  var result = lon.reduce((a, b) => a + b) / lon.length;
+int average(List<int> lon) {
+  var result = (lon.reduce((a, b) => a + b) / lon.length).round();
   return result;
 }
 
@@ -27,7 +27,7 @@ double kmod(int gamesPlayed) {
   return k;
 }
 
-List<double> elo(double elo1, double elo2, double k1, double k2, bool p1_won) {
+List<int> elo(int elo1, int elo2, double k1, double k2, bool p1_won) {
   var corr_m = 2.2 / ((elo1 - elo2) * 0.001 + 2.2);
 
   var rp1 = pow(10, (elo1 / 400));
@@ -47,11 +47,8 @@ List<double> elo(double elo1, double elo2, double k1, double k2, bool p1_won) {
     s2 = 1;
   }
 
-  var new_elo_1 = elo1 + corr_m * k1 * (s1 - exp_p1);
-  var new_elo_2 = elo2 + corr_m * k2 * (s2 - exp_p2);
-
-  new_elo_1 = double.parse(new_elo_1.toStringAsFixed(2));
-  new_elo_2 = double.parse(new_elo_2.toStringAsFixed(2));
+  var new_elo_1 = (elo1 + corr_m * k1 * (s1 - exp_p1)).round();
+  var new_elo_2 = (elo2 + corr_m * k2 * (s2 - exp_p2)).round();
 
   // print('elo1 is ' + new_elo_1.toString());
   // print('elo2 is ' + new_elo_2.toString());

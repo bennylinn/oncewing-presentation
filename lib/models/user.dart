@@ -10,7 +10,7 @@ class UserData {
   final String uid;
   final String name;
   final String clan;
-  final double rank;
+  final int rank;
   final List<dynamic> eights; // ingame scores
   final int gamesPlayed;
   final String status;
@@ -61,7 +61,6 @@ class UserData {
       uid: document['uid'],
       name: document['name'],
       clan: document['clan'],
-      // photoUrl: document['photoUrl'], for piccs
       rank: document['rank'],
       eights: document['eights'],
       gamesPlayed: document['gamesPlayed'],

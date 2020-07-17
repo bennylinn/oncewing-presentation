@@ -6,12 +6,11 @@ import 'package:OnceWing/models/profile.dart';
 import 'package:provider/provider.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 
-class PlayerBubble extends StatelessWidget {
+class PlayerBubbleXS extends StatelessWidget {
   //!!! Make smaller bubbles for horizontal courts
 
   final Profile profile;
-  final bool small;
-  PlayerBubble({this.profile, this.small});
+  PlayerBubbleXS({this.profile});
 
   @override
   Widget build(BuildContext context) {
@@ -43,26 +42,26 @@ class PlayerBubble extends StatelessWidget {
           Widget glowAvatar() {
             if (isUser) {
               return AvatarGlow(
-                endRadius: small ? 23 : 40,
+                endRadius: 20,
                 glowColor: Color(0xffC49859),
                 child: CircleAvatar(
-                  radius: 23,
+                  radius: 20,
                   backgroundColor: Color(0xffC49859),
                   child: CircleAvatar(
-                    radius: 21,
+                    radius: 18,
                     backgroundImage: img,
                   ),
                 ),
               );
             } else {
               return CircleAvatar(
-                radius: small ? 22 : 40,
+                radius: 19,
                 backgroundColor: Colors.transparent,
                 child: CircleAvatar(
-                  radius: 22,
+                  radius: 19,
                   backgroundColor: Colors.blue[100],
                   child: CircleAvatar(
-                    radius: 21,
+                    radius: 18,
                     backgroundImage: img,
                   ),
                 ),
@@ -79,7 +78,7 @@ class PlayerBubble extends StatelessWidget {
                   Text(
                     profile.name,
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: isUser ? Color(0xffC49859) : Colors.white,
                     ),
@@ -88,7 +87,7 @@ class PlayerBubble extends StatelessWidget {
               ),
             );
           } else {
-            return Loading();
+            return CircularProgressIndicator();
           }
         });
   }
