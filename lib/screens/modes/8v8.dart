@@ -309,9 +309,7 @@ class _PlayerListState extends State<Eights> {
     setState(() {
       allGames = aG;
     });
-    if (!widget.init) {
-      index = (queueFinished.length / widget.numOfCourts).truncate();
-    }
+    index = (queueFinished.length / widget.numOfCourts).truncate();
 
     final prfs = Provider.of<List<Profile>>(context) ?? [];
     final user = Provider.of<User>(context);
@@ -695,12 +693,12 @@ class _PlayerListState extends State<Eights> {
                                                 inGameUids[_currentCourtValue] =
                                                     next;
 
-                                                if (queueFinished.length %
-                                                        numOfCourts ==
-                                                    0)
-                                                  setState(() {
-                                                    index++;
-                                                  });
+                                                // if (queueFinished.length %
+                                                //         numOfCourts ==
+                                                //     0)
+                                                //   setState(() {
+                                                //     index++;
+                                                //   });
 
                                                 // update gamedata to firestore
                                                 var temp_prfs = widget.profiles;
