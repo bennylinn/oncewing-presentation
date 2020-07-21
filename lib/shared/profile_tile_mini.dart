@@ -9,6 +9,8 @@ import 'package:OnceWing/models/profile.dart';
 import 'package:provider/provider.dart';
 
 class MiniProfileTile extends StatefulWidget {
+  bool showScore;
+  List scores;
   String uid;
   final Profile profile;
 
@@ -16,6 +18,8 @@ class MiniProfileTile extends StatefulWidget {
     Key key,
     this.profile,
     this.uid,
+    this.scores,
+    this.showScore,
   }) : super(key: key);
 
   @override
@@ -29,48 +33,52 @@ class _ProfileTile extends State<MiniProfileTile> {
     int sum;
     int rounds;
 
-    rounds = widget.profile.eights.length;
-    sum = rounds * 21 - widget.profile.eights.reduce((a, b) => a + b);
+    if (widget.showScore) {
+      rounds = widget.scores.length;
+      sum = rounds * 21 - widget.scores.reduce((a, b) => a + b);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Container(
-            child: ListView.separated(
-                separatorBuilder: (BuildContext context, int index) {
-                  return SizedBox(
-                    width: 1,
-                  );
-                },
-                scrollDirection: Axis.horizontal,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: rounds,
-                itemBuilder: (context, index) {
-                  return Container(
-                    width: 18,
-                    child: Center(
-                      child: Text(
-                        widget.profile.eights[index].toString(),
-                        style: TextStyle(color: Colors.blue[100]),
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Container(
+              child: ListView.separated(
+                  separatorBuilder: (BuildContext context, int index) {
+                    return Center(
+                        child: Text(', ',
+                            style: TextStyle(color: Colors.blue[100])));
+                  },
+                  scrollDirection: Axis.horizontal,
+                  itemCount: rounds,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      width: 18,
+                      height: 18,
+                      child: Center(
+                        child: Text(
+                          widget.scores[index].toString(),
+                          style: TextStyle(color: Colors.blue[100]),
+                        ),
                       ),
-                    ),
-                  );
-                }),
-          ),
-        ),
-        Container(
-          child: Text(
-            '+$sum',
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.blue[400],
+                    );
+                  }),
             ),
           ),
-        ),
-      ],
-    );
+          Container(
+            child: Text(
+              '+$sum',
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.blue[400],
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Container(height: 0);
+    }
   }
 
   @override
@@ -106,25 +114,6 @@ class _ProfileTile extends State<MiniProfileTile> {
                   decoration: BoxDecoration(
                       border: Border.all(color: Color(0xffC49859), width: 2)),
                   child: ListTile(
-                    // title: Container(
-                    //   width: MediaQuery.of(context).size.width / 5,
-                    //   child: InkWell(
-                    //       onTap: () {
-                    //         Navigator.of(context).push(MaterialPageRoute(
-                    //             builder: (BuildContext context) => Scaffold(
-                    //                     body: ProfileWrapper(
-                    //                   uid: widget.profile.uid,
-                    //                 ))));
-                    //       },
-                    //       child: Text(
-                    //         widget.profile.name,
-                    //         style: TextStyle(color: Color(0xffC49859)),
-                    //       )),
-                    // ),
-                    // subtitle: Text(
-                    //   widget.profile.rank.toString(),
-                    //   style: TextStyle(color: Colors.blue[100]),
-                    // ),
                     title: Container(
                       height: 60,
                     ),
@@ -148,7 +137,7 @@ class _ProfileTile extends State<MiniProfileTile> {
                             profile: widget.profile,
                           ))),
                     ),
-                    trailing: Container(width: 190, child: scores()),
+                    trailing: Container(width: 210, child: scores()),
                   ),
                 ),
               ),

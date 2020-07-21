@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math';
 
 List shuffle(List items) {
@@ -96,4 +97,35 @@ eloDifSingle(game, bool side1wins) {
   listOfEloDif.add(-edif);
 
   return listOfEloDif;
+}
+
+Map<dynamic, dynamic> parseScoresFromAllScores(Map allScores) {
+  Map parsedScoresMap = {};
+  SplayTreeMap<dynamic, dynamic>.from(
+          allScores, (a, b) => int.parse(a).compareTo(int.parse(b)))
+      .forEach((key, value) {
+    var currentGame = allScores[key];
+    var listUids = currentGame['uids'];
+    var listScores = currentGame['scores'];
+
+    for (var i = 0; i < listUids.length; i++) {
+      var score;
+      var uid = listUids[i];
+      if (i < listUids.length / 2) {
+        score = listScores[0];
+      } else {
+        score = listScores[1];
+      }
+
+      if (parsedScoresMap.containsKey(uid)) {
+        List userTempScores = parsedScoresMap[uid];
+        userTempScores.add(score);
+        parsedScoresMap[uid] = userTempScores;
+      } else {
+        parsedScoresMap[uid] = [score];
+      }
+    }
+  });
+
+  return parsedScoresMap;
 }

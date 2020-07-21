@@ -1,78 +1,58 @@
 import 'package:flutter/material.dart';
-
+import 'package:slider_button/slider_button.dart';
 
 class ToggleButton extends StatefulWidget {
-  final Function(bool) onPressed;
-  ToggleButton ({ Key key, this.onPressed}): super(key: key);
+  final active;
+  final Function(bool) toggleFn;
+  final Null Function() onSlide;
+  ToggleButton({Key key, this.toggleFn, this.onSlide, this.active})
+      : super(key: key);
 
   @override
   _ToggleButtonState createState() => _ToggleButtonState();
 }
 
 class _ToggleButtonState extends State<ToggleButton> {
-  bool toggleValue = false;
+  bool active = false;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 30,
-      width: 75,
-      child: Center(
-        child: _animatedButtonUI,
-      )
-    );
-  }
-  
-  Widget get _animatedButtonUI => GestureDetector(
-    onTapDown: _onTap,
-    child: Container(
-          height: 30,
-          width: 75,
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 250),
-            height: 30.0,
-            width: 75.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
-              color: toggleValue ? Colors.greenAccent[100] : Colors.redAccent[100].withOpacity(0.5),
-            ),
-            child: Stack(
-              children: <Widget>[
-                AnimatedPositioned(
-                  duration: Duration(milliseconds: 250),
-                  curve: Curves.easeIn,
-                  top: 3.0,
-                  left: toggleValue ? 40.0 : 0.0,
-                  right: toggleValue ? 0.0 : 40.0,
-                  child: InkWell(
-                    onTap: toggleButton,
-                    child: AnimatedSwitcher(
-                      duration: Duration(milliseconds: 300),
-                      // transitionBuilder: (Widget child, Animation<double> animation) {
-                      //   return RotationTransition(
-                      //     child: child, turns: animation);
-                      // },
-                      child: toggleValue ? Icon(Icons.check_circle, color: Colors.green, size: 25.0, 
-                      key: UniqueKey(),
-                      ) : Icon(Icons.remove_circle_outline, color: Colors.red, size: 25.0,
-                      key: UniqueKey(),
-                      )
-                    ),
-                  ),
-                )
-              ],
-            ),
+        height: 80,
+        width: 250,
+        child: Center(
+            child: SliderButton(
+          width: 250,
+          vibrationFlag: false,
+          dismissible: false,
+          action: () {
+            print('slid');
+            widget.toggleFn(!widget.active);
+            if (widget.active) {
+              widget.onSlide();
+            }
+            setState(() {
+              active = !active;
+            });
+          },
+          label: Text(
+            "Update Scores",
+            style: TextStyle(
+                color: Color(0xff4a4a4a),
+                fontWeight: FontWeight.w500,
+                fontSize: 17),
           ),
-        ),
-      );
-  
-  void _onTap(TapDownDetails details) {
-    widget.onPressed(toggleValue);
-  }
-
-  toggleButton() {
-    setState(() {
-      toggleValue = !toggleValue;
-    });
+          icon: Center(
+              child: Icon(
+            Icons.navigate_next,
+            color: Colors.white,
+            size: 40.0,
+            semanticLabel: 'Text to announce in accessibility modes',
+          )),
+          buttonColor: widget.active ? Colors.red : Colors.grey,
+          backgroundColor: widget.active ? Colors.red[300] : Colors.grey[400],
+          highlightedColor: widget.active ? Colors.black : Colors.white,
+          baseColor: Colors.white,
+        )));
   }
 }

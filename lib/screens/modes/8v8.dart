@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'package:OnceWing/buttons/toggle.dart';
 import 'package:OnceWing/models/game.dart';
 import 'package:OnceWing/models/profile.dart';
 import 'package:OnceWing/models/user.dart';
@@ -53,6 +54,13 @@ class _PlayerListState extends State<Eights> {
   int numOfRounds;
   Map allGames = {};
   bool finished = false;
+  bool weReadyToUpdate = false;
+
+  toggleCallback(lebool) {
+    setState(() {
+      weReadyToUpdate = lebool;
+    });
+  }
 
   List<dynamic> updateEights(List<dynamic> eights, int game, int score) {
     var newEights = eights.toList();
@@ -311,6 +319,17 @@ class _PlayerListState extends State<Eights> {
     });
     index = (queueFinished.length / widget.numOfCourts).truncate();
 
+    if (countList[_currentCourtValue * 2] >= 21 ||
+        countList[_currentCourtValue * 2 + 1] >= 21) {
+      setState(() {
+        weReadyToUpdate = true;
+      });
+    } else {
+      setState(() {
+        weReadyToUpdate = false;
+      });
+    }
+
     final prfs = Provider.of<List<Profile>>(context) ?? [];
     final user = Provider.of<User>(context);
 
@@ -388,6 +407,22 @@ class _PlayerListState extends State<Eights> {
         updateRoundRobinProfile(game[2], scores[1], round, elodif[1]);
         updateRoundRobinProfile(game[3], scores[1], round, elodif[1]);
       }
+    }
+
+    updateAllGames(Map allGames) {
+      SplayTreeMap.from(allGames, (a, b) => a.compareTo(b))
+          .forEach((key, value) {
+        List game = uidToProfiles(allGames[key]['uids']);
+        int round = (key / numOfCourts).truncate();
+        print(round);
+        bool side1wins =
+            allGames[key]['scores'][0] > allGames[key]['scores'][1];
+
+        var eloDif = eloDifSingle(game, side1wins);
+        print(eloDif);
+
+        // updateRRcourt(game, allGames[key]['scores'], eloDif, round);
+      });
     }
 
     updateRRforAllCourts(List inGame, List scores, int round, List elodifs) {
@@ -512,11 +547,8 @@ class _PlayerListState extends State<Eights> {
                             style: TextStyle(
                                 fontSize: 20, color: Color(0xffC49859))),
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
                       Container(
-                        height: 50,
+                        height: 80,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -573,8 +605,8 @@ class _PlayerListState extends State<Eights> {
                             //   ),
                             // ), -----> previous match button
                             Container(
-                              child: SizedBox(
-                                height: 50,
+                              child: Container(
+                                height: 80,
                                 child: (queueFinished.length ==
                                             numOfCourts * numOfRounds &&
                                         !widget.viewmode)
@@ -596,6 +628,8 @@ class _PlayerListState extends State<Eights> {
                                             parsedAllGames[key.toString()] =
                                                 value;
                                           });
+
+                                          updateAllGames(allGames);
 
                                           GameDatabaseService().updateGameData(
                                             widget.gameid,
@@ -634,12 +668,9 @@ class _PlayerListState extends State<Eights> {
                                         ready: endbutton,
                                       )
                                     : ((!widget.viewmode || ih)
-                                        ? RaisedButton.icon(
-                                            icon: Icon(Icons.arrow_right,
-                                                color: Color(0xffC49859)),
-                                            elevation: 4,
-                                            onPressed: () {},
-                                            onLongPress: () {
+                                        ? ToggleButton(
+                                            toggleFn: toggleCallback,
+                                            onSlide: () {
                                               print(numOfRounds);
                                               print(index);
                                               if (index < numOfRounds) {
@@ -663,11 +694,11 @@ class _PlayerListState extends State<Eights> {
                                                 print(
                                                     'updating eights at index:');
                                                 print(index);
-                                                updateRRcourt(
-                                                    inGame[_currentCourtValue],
-                                                    scores,
-                                                    eloDif,
-                                                    index);
+                                                // updateRRcourt(
+                                                //     inGame[_currentCourtValue],
+                                                //     scores,
+                                                //     eloDif,
+                                                //     index); ----> updates to Database
                                                 updateMapGames(
                                                     allGames,
                                                     scores,
@@ -753,13 +784,7 @@ class _PlayerListState extends State<Eights> {
                                                 print(countList);
                                               }
                                             },
-                                            label: Text(
-                                              'Hold To Update',
-                                              style: TextStyle(
-                                                  color: Color(0xffC49859),
-                                                  fontSize: 16),
-                                            ),
-                                            color: Colors.red.withOpacity(0.5),
+                                            active: weReadyToUpdate,
                                           )
                                         : Container()),
                               ),

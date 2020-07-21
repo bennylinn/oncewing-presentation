@@ -1,4 +1,7 @@
+import 'dart:collection';
+
 import 'package:OnceWing/models/profile.dart';
+import 'package:OnceWing/shared/meth.dart';
 import 'package:OnceWing/shared/profile_tile_mini.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,60 +27,41 @@ class _ProfileListState extends State<MiniProfileList> {
   Widget build(BuildContext context) {
     List<Profile> prfs;
     List<String> uids;
-    List<Profile> profiles;
+    List<dynamic> profiles;
     Map scores;
     int rounds = (widget.scores.length / widget.profiles.length).round();
-
-    List<Profile> historyProfiles = [];
+    Map uidScoreMap;
+    SplayTreeMap splayTreeMap = SplayTreeMap.from({});
 
     prfs = Provider.of<List<Profile>>(context) ?? [];
     uids = widget.profiles.map((i) => i.uid).toList();
     profiles = prfs.where((item) => uids.contains(item.uid)).toList();
     profiles.sort((a, b) => a.name.compareTo(b.name));
 
-    int eightSum(Profile profile) {
-      var sum = rounds * 21 - profile.eights.reduce((a, b) => a + b);
+    int eightSum(List listNums) {
+      var sum = rounds * 21 - listNums.reduce((a, b) => a + b);
       return sum;
     }
 
-    if (!widget.showScore) {
+    if (widget.showScore) {
       scores = widget.scores;
 
-      // segregateScores(scores, rounds, players) {
-      //   var segScores = [];
-      //   for (var i = 0; i < players.length; i++) {
-      //     var s = scores.getRange(i * rounds, (i + 1) * rounds).toList();
-      //     segScores.add(s);
-      //   }
-      //   return segScores;
-      // }
-
-      // List<dynamic> s1 = scores.getRange(0, 7).toList();
-      // List<dynamic> s2 = scores.getRange(7, 14).toList();
-      // List<dynamic> s3 = scores.getRange(14, 21).toList();
-      // List<dynamic> s4 = scores.getRange(21, 28).toList();
-      // List<dynamic> s5 = scores.getRange(28, 35).toList();
-      // List<dynamic> s6 = scores.getRange(35, 42).toList();
-      // List<dynamic> s7 = scores.getRange(42, 49).toList();
-      // List<dynamic> s8 = scores.getRange(49, 56).toList();
-      // List<List<dynamic>> segregatedScores = [s1, s2, s3, s4, s5, s6, s7, s8];
-      List<dynamic> segregatedScores = [];
-      scores.forEach((key, value) {
-        segregatedScores.add(value['scores']);
+      uidScoreMap = parseScoresFromAllScores(scores);
+      splayTreeMap = SplayTreeMap.from(
+          uidScoreMap,
+          (a, b) =>
+              eightSum(uidScoreMap[a]).compareTo(eightSum(uidScoreMap[b])));
+      var orderedByGameScoreSum = [];
+      splayTreeMap.forEach((key, value) {
+        profiles.forEach((profile) {
+          if (profile.uid == key) {
+            orderedByGameScoreSum.add(profile);
+          }
+        });
       });
-      //     segregateScores(scores, rounds, profiles);
-      // profiles.asMap().forEach((index, Profile profile) => historyProfiles.add(
-      //     Profile(
-      //         uid: profile.uid,
-      //         name: profile.name,
-      //         clan: profile.clan,
-      //         eights: segregatedScores[index],
-      //         rank: profile.rank)));
 
-      historyProfiles.sort((a, b) => eightSum(a).compareTo(eightSum(b)));
+      profiles = orderedByGameScoreSum;
     }
-
-    profiles.sort((a, b) => eightSum(a).compareTo(eightSum(b)));
 
     void callbackProfile(Profile profile) {
       if (playalist.contains(profile)) {
@@ -87,19 +71,18 @@ class _ProfileListState extends State<MiniProfileList> {
       widget.callback(playalist);
     }
 
-    List<Profile> showProfiles;
-    if (widget.showScore) {
-      showProfiles = profiles;
-    } else {
-      showProfiles = historyProfiles;
-    }
-
     return ListView.builder(
       addAutomaticKeepAlives: true,
-      itemCount: showProfiles.length,
+      itemCount: profiles.length,
       itemBuilder: (context, index) {
+        var tempScores = [];
+        if (widget.showScore) {
+          tempScores = uidScoreMap[profiles[index].uid];
+        }
         return MiniProfileTile(
-          profile: showProfiles[index],
+          profile: profiles[index],
+          scores: tempScores,
+          showScore: widget.showScore,
         );
       },
       shrinkWrap: false,
