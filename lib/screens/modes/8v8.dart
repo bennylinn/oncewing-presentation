@@ -400,6 +400,42 @@ class _PlayerListState extends State<Eights> {
       );
     }
 
+    updateEightsProfile(Profile profile, int score, int round) {
+      DatabaseService(uid: profile.uid).updateUserData(
+        profile.uid,
+        profile.clan,
+        profile.name,
+        profile.rank,
+        updateEights(profile.eights, round + 1, score),
+        profile.gamesPlayed + 1,
+        profile.status,
+        profile.wins,
+        profile.photoUrl,
+        profile.exp,
+        profile.fcmToken,
+        profile.fireRating,
+        profile.waterRating,
+        profile.windRating,
+        profile.earthRating,
+        profile.raters,
+        profile.feathers,
+        profile.collection,
+        profile.bio,
+        profile.email,
+        profile.followers,
+        profile.following,
+      );
+    }
+
+    updateRREights(List game, List scores, round) {
+      if (game.length == 4) {
+        updateEightsProfile(game[0], scores[0], round);
+        updateEightsProfile(game[1], scores[0], round);
+        updateEightsProfile(game[2], scores[1], round);
+        updateEightsProfile(game[3], scores[1], round);
+      }
+    }
+
     updateRRcourt(List game, List scores, elodif, round) {
       if (game.length == 4) {
         updateRoundRobinProfile(game[0], scores[0], round, elodif[0]);
@@ -421,7 +457,7 @@ class _PlayerListState extends State<Eights> {
         var eloDif = eloDifSingle(game, side1wins);
         print(eloDif);
 
-        // updateRRcourt(game, allGames[key]['scores'], eloDif, round);
+        updateRRcourt(game, allGames[key]['scores'], eloDif, round);
       });
     }
 
@@ -699,6 +735,10 @@ class _PlayerListState extends State<Eights> {
                                                 //     scores,
                                                 //     eloDif,
                                                 //     index); ----> updates to Database
+                                                updateRREights(
+                                                    inGame[_currentCourtValue],
+                                                    scores,
+                                                    index);
                                                 updateMapGames(
                                                     allGames,
                                                     scores,

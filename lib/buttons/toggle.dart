@@ -18,13 +18,15 @@ class _ToggleButtonState extends State<ToggleButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 80,
-        width: 250,
+        height: 60,
+        width: 200,
         child: Center(
             child: SliderButton(
-          width: 250,
+          width: 200,
+          height: 60,
           vibrationFlag: false,
           dismissible: false,
+          buttonSize: 50,
           action: () {
             print('slid');
             widget.toggleFn(!widget.active);
@@ -46,7 +48,7 @@ class _ToggleButtonState extends State<ToggleButton> {
               child: Icon(
             Icons.navigate_next,
             color: Colors.white,
-            size: 40.0,
+            size: 30.0,
             semanticLabel: 'Text to announce in accessibility modes',
           )),
           buttonColor: widget.active ? Colors.red : Colors.grey,

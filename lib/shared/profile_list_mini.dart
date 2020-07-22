@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'package:OnceWing/models/profile.dart';
 import 'package:OnceWing/shared/meth.dart';
 import 'package:OnceWing/shared/profile_tile_mini.dart';
