@@ -5,6 +5,7 @@ import 'package:OnceWing/models/profile.dart';
 import 'package:OnceWing/models/user.dart';
 import 'package:OnceWing/services/database.dart';
 import 'package:OnceWing/services/game_database.dart';
+import 'package:OnceWing/shared/alert.dart';
 import 'package:OnceWing/shared/animated_button.dart';
 import 'package:OnceWing/shared/game_order.dart';
 import 'package:OnceWing/shared/generate_court.dart';
@@ -364,7 +365,8 @@ class _PlayerListState extends State<Eights> {
     inGame = List.generate(
         inGameUids.length, (index) => uidToProfiles(inGameUids[index]));
 
-    updateRoundRobinProfile(Profile profile, int score, int round, int elodif) {
+    Future<void> updateRoundRobinProfile(
+        Profile profile, int score, int round, int elodif) async {
       var wonndered = 0;
       var exp;
       if (score >= 21) {
@@ -374,7 +376,7 @@ class _PlayerListState extends State<Eights> {
         wonndered = 0;
         exp = 45;
       }
-      DatabaseService(uid: profile.uid).updateUserData(
+      await DatabaseService(uid: profile.uid).updateUserData(
         profile.uid,
         profile.clan,
         profile.name,
@@ -436,18 +438,22 @@ class _PlayerListState extends State<Eights> {
       }
     }
 
-    updateRRcourt(List game, List scores, elodif, round) {
+    Future<void> updateRRcourt(List game, List scores, elodif, round) async {
       if (game.length == 4) {
-        updateRoundRobinProfile(game[0], scores[0], round, elodif[0]);
-        updateRoundRobinProfile(game[1], scores[0], round, elodif[0]);
-        updateRoundRobinProfile(game[2], scores[1], round, elodif[1]);
-        updateRoundRobinProfile(game[3], scores[1], round, elodif[1]);
+        await updateRoundRobinProfile(
+            uidToProfile(game[0].uid), scores[0], round, elodif[0]);
+        await updateRoundRobinProfile(
+            uidToProfile(game[1].uid), scores[0], round, elodif[0]);
+        await updateRoundRobinProfile(
+            uidToProfile(game[2].uid), scores[1], round, elodif[1]);
+        await updateRoundRobinProfile(
+            uidToProfile(game[3].uid), scores[1], round, elodif[1]);
       }
     }
 
-    updateAllGames(Map allGames) {
+    Future<void> updateAllGames(Map allGames) async {
       SplayTreeMap.from(allGames, (a, b) => a.compareTo(b))
-          .forEach((key, value) {
+          .forEach((key, value) async {
         List game = uidToProfiles(allGames[key]['uids']);
         int round = (key / numOfCourts).truncate();
         print(round);
@@ -457,9 +463,9 @@ class _PlayerListState extends State<Eights> {
         var eloDif = eloDifSingle(game, side1wins);
         print(eloDif);
 
-        updateRRcourt(game, allGames[key]['scores'], eloDif, round);
+        await updateRRcourt(game, allGames[key]['scores'], eloDif, round);
       });
-    }
+    } // we're not updating all games right now
 
     updateRRforAllCourts(List inGame, List scores, int round, List elodifs) {
       for (var i = 0; i < inGame.length; i++) {
@@ -647,7 +653,7 @@ class _PlayerListState extends State<Eights> {
                                             numOfCourts * numOfRounds &&
                                         !widget.viewmode)
                                     ? AnimatedButton(
-                                        onPressed: (_) {
+                                        onPressed: (_) async {
                                           var temp_prfs = widget.profiles;
                                           temp_prfs.sort((a, b) =>
                                               a.name.compareTo(b.name));
@@ -667,7 +673,8 @@ class _PlayerListState extends State<Eights> {
 
                                           updateAllGames(allGames);
 
-                                          GameDatabaseService().updateGameData(
+                                          await GameDatabaseService()
+                                              .updateGameData(
                                             widget.gameid,
                                             alphauid,
                                             game.type,
@@ -909,19 +916,110 @@ class _PlayerListState extends State<Eights> {
                             itemCount: allGames.length,
                             itemBuilder: (context, ind) {
                               var temp_scores = allGames[ind]['scores'];
-                              return Container(
-                                  height: 250,
-                                  width: 400,
-                                  child: GenerateCourt(
-                                          courtProfiles: List.generate(
-                                              4,
-                                              (index) => uidToProfile(
-                                                  allGames[ind]['uids']
-                                                      [index])),
-                                          index: index,
-                                          scores:
-                                              "${temp_scores[0]}-${temp_scores[1]}")
-                                      .horizontal(context));
+                              return InkWell(
+                                child: Container(
+                                    height: 250,
+                                    width: 400,
+                                    child: GenerateCourt(
+                                            courtProfiles: List.generate(
+                                                4,
+                                                (index) => uidToProfile(
+                                                    allGames[ind]['uids']
+                                                        [index])),
+                                            index: index,
+                                            scores:
+                                                "${temp_scores[0]}-${temp_scores[1]}")
+                                        .horizontal(context)),
+                                onLongPress: () {
+                                  var newCountList = [];
+                                  callbackEdit(List<int> newCount, int index) {
+                                    // single callback function corresponding to index of count
+                                    setState(() {
+                                      newCountList.add(newCount[0]);
+                                    });
+                                    setState(() {
+                                      newCountList.add(newCount[1]);
+                                    });
+                                  }
+
+                                  List uids = allGames[ind]['uids'];
+                                  List profs = uidToProfiles(uids);
+
+                                  return showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          backgroundColor: Colors.blue[900],
+                                          title: Text('hello',
+                                              style: TextStyle(
+                                                  color: Colors.blue[100])),
+                                          content: GenerateCourt(
+                                              // if theres nobody on a court --> show empty court no scoreboard
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.6,
+                                              courtProfiles:
+                                                  uidToProfiles(uids),
+                                              countbutton: CountButton(
+                                                [0, 0],
+                                                callbackEdit,
+                                                ind,
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.15,
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.6,
+                                              )).vertical(context),
+                                          actions: [
+                                            FlatButton(
+                                              child: Text('Confirm',
+                                                  style: TextStyle(
+                                                      color: Colors.blue[100])),
+                                              onPressed: () {
+                                                var game = (ind / numOfCourts)
+                                                        .truncate() +
+                                                    1;
+                                                for (var i = 0; i < 4; i++) {
+                                                  Firestore.instance
+                                                      .collection('profiles')
+                                                      .document(profs[i].uid)
+                                                      .updateData({
+                                                    'eights': updateEights(
+                                                        profs[i].eights,
+                                                        game,
+                                                        (i <= 1)
+                                                            ? newCountList[0]
+                                                            : newCountList[1])
+                                                  });
+                                                } // for doubles
+                                                setState(() {
+                                                  allGames[ind]['scores'] =
+                                                      newCountList;
+                                                });
+                                                var parsedAllGames = {};
+
+                                                allGames.forEach((key, value) {
+                                                  parsedAllGames[
+                                                      key.toString()] = value;
+                                                });
+                                                Firestore.instance
+                                                    .collection('games')
+                                                    .document(widget.gameid)
+                                                    .updateData({
+                                                  'scores': parsedAllGames
+                                                });
+                                                Navigator.pop(context);
+                                              },
+                                            )
+                                          ],
+                                        );
+                                      });
+                                },
+                              );
                             },
                           ),
                   ),

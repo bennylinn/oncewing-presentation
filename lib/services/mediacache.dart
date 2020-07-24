@@ -11,12 +11,12 @@ class CacheManagerr {
 
     await getFromCache(url).then((value) async {
       if (value == null) {
-        print('getting from network...');
+        // print('getting from network...');
         await DefaultCacheManager()
             .downloadFile(url)
             .then((value) => fileInfo = value);
       } else {
-        print('retreived from cache...');
+        // print('retreived from cache...');
         fileInfo = value;
       }
     });

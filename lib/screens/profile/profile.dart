@@ -952,7 +952,6 @@ class ImageTile extends StatelessWidget {
               "Delete Video",
               "Are you sure you want to delete this video?",
               print,
-              // CloudStorageService(uid: currentUid).deleteHighlight,
               'Highlight.mp4');
         }
       }
