@@ -331,12 +331,12 @@ class _PlayerListState extends State<Eights> {
       });
     }
 
-    final prfs = Provider.of<List<Profile>>(context) ?? [];
     final user = Provider.of<User>(context);
 
     List<List<Profile>> inGame;
 
     bool ih = inHere(_currentCourtValue, inGameUids, user);
+    var prfs = Provider.of<List<Profile>>(context) ?? [];
 
     Profile uidToProfile(uid) {
       Profile p =
@@ -366,7 +366,7 @@ class _PlayerListState extends State<Eights> {
         inGameUids.length, (index) => uidToProfiles(inGameUids[index]));
 
     Future<void> updateRoundRobinProfile(
-        Profile profile, int score, int round, int elodif) async {
+        Profile profile, int score, int round, int elodif) {
       var wonndered = 0;
       var exp;
       if (score >= 21) {
@@ -376,30 +376,30 @@ class _PlayerListState extends State<Eights> {
         wonndered = 0;
         exp = 45;
       }
-      await DatabaseService(uid: profile.uid).updateUserData(
-        profile.uid,
-        profile.clan,
-        profile.name,
-        (profile.rank + elodif).round(),
-        updateEights(profile.eights, round + 1, score),
-        profile.gamesPlayed + 1,
-        profile.status,
-        profile.wins + wonndered,
-        profile.photoUrl,
-        profile.exp + exp,
-        profile.fcmToken,
-        profile.fireRating,
-        profile.waterRating,
-        profile.windRating,
-        profile.earthRating,
-        profile.raters,
-        profile.feathers,
-        profile.collection,
-        profile.bio,
-        profile.email,
-        profile.followers,
-        profile.following,
-      );
+      // await DatabaseService(uid: profile.uid).updateUserData(
+      //   profile.uid,
+      //   profile.clan,
+      //   profile.name,
+      //   (profile.rank + elodif).round(),
+      //   updateEights(profile.eights, round + 1, score),
+      //   profile.gamesPlayed + 1,
+      //   profile.status,
+      //   profile.wins + wonndered,
+      //   profile.photoUrl,
+      //   profile.exp + exp,
+      //   profile.fcmToken,
+      //   profile.fireRating,
+      //   profile.waterRating,
+      //   profile.windRating,
+      //   profile.earthRating,
+      //   profile.raters,
+      //   profile.feathers,
+      //   profile.collection,
+      //   profile.bio,
+      //   profile.email,
+      //   profile.followers,
+      //   profile.following,
+      // );
     }
 
     updateEightsProfile(Profile profile, int score, int round) {
@@ -438,34 +438,62 @@ class _PlayerListState extends State<Eights> {
       }
     }
 
-    Future<void> updateRRcourt(List game, List scores, elodif, round) async {
-      if (game.length == 4) {
-        await updateRoundRobinProfile(
-            uidToProfile(game[0].uid), scores[0], round, elodif[0]);
-        await updateRoundRobinProfile(
-            uidToProfile(game[1].uid), scores[0], round, elodif[0]);
-        await updateRoundRobinProfile(
-            uidToProfile(game[2].uid), scores[1], round, elodif[1]);
-        await updateRoundRobinProfile(
-            uidToProfile(game[3].uid), scores[1], round, elodif[1]);
-      }
-    }
+    // Future<void> updateRRcourt(List game, List scores, elodif) async {
+    //   if (game.length == 4) {
+    //     await updateRoundRobinProfile(game[0], scores[0], elodif[0]);
+    //     await updateRoundRobinProfile(game[1], scores[0], elodif[0]);
+    //     await updateRoundRobinProfile(game[2], scores[1], elodif[1]);
+    //     await updateRoundRobinProfile(game[3], scores[1], elodif[1]);
+    //     setState(() {});
+    //   }
+    // }
 
     Future<void> updateAllGames(Map allGames) async {
+      Map yuhMap = {}; // map to keep track of calculations
+      widget.profiles.forEach((profile) {
+        yuhMap[profile.uid] = {
+          'name': profile.name,
+          'rank': profile.rank,
+          'gamesPlayed': profile.gamesPlayed,
+          'wins': profile.wins,
+        };
+      });
+
       SplayTreeMap.from(allGames, (a, b) => a.compareTo(b))
           .forEach((key, value) async {
-        List game = uidToProfiles(allGames[key]['uids']);
-        int round = (key / numOfCourts).truncate();
-        print(round);
+        List uids = allGames[key]['uids'];
+
         bool side1wins =
             allGames[key]['scores'][0] > allGames[key]['scores'][1];
 
-        var eloDif = eloDifSingle(game, side1wins);
+        var listRank = [];
+        uids.forEach((uid) {
+          listRank.add(yuhMap[uid]['rank']);
+        });
+
+        List eloDif = eloDifSingleNumsOnly(listRank, side1wins);
         print(eloDif);
 
-        await updateRRcourt(game, allGames[key]['scores'], eloDif, round);
+        for (var i = 0; i < 4; i++) {
+          yuhMap[uids[i]]['rank'] += (i <= 1) ? eloDif[0] : eloDif[1];
+          yuhMap[uids[i]]['gamesPlayed']++;
+          yuhMap[uids[i]]['wins'] +=
+              ((side1wins && i <= 1) || (!side1wins && i > 1)) ? 1 : 0;
+        }
       });
-    } // we're not updating all games right now
+      print(yuhMap);
+
+      yuhMap.forEach((uid, data) async {
+        await Firestore.instance
+            .collection('profiles')
+            .document(uid)
+            .updateData({
+          'rank': yuhMap[uid]['rank'],
+          'gamesPlayed': yuhMap[uid]['gamesPlayed'],
+          'wins': yuhMap[uid]['wins'],
+        }).then((value) => print('done ${yuhMap[uid]['name']}'));
+      });
+    }
 
     updateRRforAllCourts(List inGame, List scores, int round, List elodifs) {
       for (var i = 0; i < inGame.length; i++) {
@@ -671,7 +699,7 @@ class _PlayerListState extends State<Eights> {
                                                 value;
                                           });
 
-                                          updateAllGames(allGames);
+                                          await updateAllGames(allGames);
 
                                           await GameDatabaseService()
                                               .updateGameData(

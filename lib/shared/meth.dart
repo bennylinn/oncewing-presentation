@@ -71,6 +71,20 @@ elodif(game, side1wins) {
   return edif;
 }
 
+elodifNumsOnly(listRank, side1wins) {
+  var edif = elo(
+        average([listRank[0], listRank[1]]),
+        average([listRank[2], listRank[3]]),
+        50,
+        50,
+        side1wins,
+      )[0] -
+      average([listRank[0], listRank[1]]);
+  // print(average([game[0].rank, game[1].rank]));
+
+  return edif;
+}
+
 eloDifList(List games, List side1winsList) {
   // takes in a ListOfGame and returns an even ListOfDoubles of differences in ELO
   var listOfEloDif = [];
@@ -92,6 +106,18 @@ eloDifSingle(game, bool side1wins) {
   var listOfEloDif = [];
 
   var edif = elodif(game, side1wins);
+
+  listOfEloDif.add(edif);
+  listOfEloDif.add(-edif);
+
+  return listOfEloDif;
+}
+
+eloDifSingleNumsOnly(listRank, bool side1wins) {
+  // takes in a single game and returns a List of ELO changes
+  var listOfEloDif = [];
+
+  var edif = elodifNumsOnly(listRank, side1wins);
 
   listOfEloDif.add(edif);
   listOfEloDif.add(-edif);
