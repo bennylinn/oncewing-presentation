@@ -874,18 +874,6 @@ class _PlayerListState extends State<Eights> {
                   appBar: AppBar(
                     elevation: 0,
                     actions: [
-                      // FlatButton(
-                      //   child: Icon(
-                      //     Icons.arrow_drop_up,
-                      //     color: Colors.blue[100],
-                      //     size: 40,
-                      //   ),
-                      //   onPressed: () {
-                      //     _controller.animateTo(0,
-                      //         duration: Duration(milliseconds: 200),
-                      //         curve: Curves.ease);
-                      //   },
-                      // ),
                       FlatButton(
                         child: (viewUpcomingToggle)
                             ? Icon(

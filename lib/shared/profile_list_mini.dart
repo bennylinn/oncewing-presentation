@@ -30,11 +30,12 @@ class _ProfileListState extends State<MiniProfileList> {
     Map scores;
     int rounds = (widget.scores.length / widget.profiles.length).round();
     Map uidScoreMap;
-    SplayTreeMap splayTreeMap = SplayTreeMap.from({});
+    var splayTreeMap;
 
-    prfs = Provider.of<List<Profile>>(context) ?? [];
+    // prfs = Provider.of<List<Profile>>(context) ?? [];
     uids = widget.profiles.map((i) => i.uid).toList();
-    profiles = prfs.where((item) => uids.contains(item.uid)).toList();
+    profiles = widget.profiles;
+    // profiles = prfs.where((item) => uids.contains(item.uid)).toList();
     profiles.sort((a, b) => a.name.compareTo(b.name));
 
     int eightSum(List listNums) {
@@ -46,10 +47,11 @@ class _ProfileListState extends State<MiniProfileList> {
       scores = widget.scores;
 
       uidScoreMap = parseScoresFromAllScores(scores);
-      splayTreeMap = SplayTreeMap.from(
-          uidScoreMap,
-          (a, b) =>
-              eightSum(uidScoreMap[a]).compareTo(eightSum(uidScoreMap[b])));
+      var sortedKeys = uidScoreMap.keys.toList(growable: false)
+        ..sort((k1, k2) =>
+            eightSum(uidScoreMap[k1]).compareTo(eightSum(uidScoreMap[k2])));
+      splayTreeMap = new LinkedHashMap.fromIterable(sortedKeys,
+          key: (k) => k, value: (k) => uidScoreMap[k]);
       var orderedByGameScoreSum = [];
       splayTreeMap.forEach((key, value) {
         profiles.forEach((profile) {

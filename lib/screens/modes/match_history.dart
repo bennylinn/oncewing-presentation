@@ -48,9 +48,9 @@ class _MatchHistory extends State<MatchHistory> {
                   color: Color(0xff050E14),
                   child: MiniProfileList(
                     showScore: true,
-                    profiles: _profiles,
+                    profiles: _profiles, // not showing all players
                     scores: widget.scores,
-                  ), // probably put the mini here
+                  ),
                 ),
               ),
             ),

@@ -437,7 +437,6 @@ class _GameHome extends State<GameHome> {
                                         setState(() {
                                           _first = false;
                                         });
-                                        print(_first);
                                       },
                                     ),
                                     InkWell(
