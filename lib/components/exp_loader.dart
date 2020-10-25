@@ -50,7 +50,7 @@ class _ExperienceLoaderState extends State<ExperienceLoader> {
               trackColor: Colors.white,
               dotColor: Colors.transparent,
               progressBarColor: Color(0xffC49859),
-              progressBarColors: [Color(0xffC49859), Colors.blue[400]])),
+              progressBarColors: [Color(0xffC49859), Color(0xff2B2213)])),
     );
   }
 }

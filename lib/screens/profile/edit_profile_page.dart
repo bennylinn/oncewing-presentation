@@ -1,17 +1,22 @@
 import 'dart:io';
 
 import 'package:OnceWing/models/user.dart';
-import 'package:OnceWing/services/database.dart';
 import 'package:OnceWing/services/storage.dart';
 import "package:flutter/material.dart";
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
+
+/// Edit Profile Page Screen
+/// User can edit profile if signed in
+///
+/// User has access to change:
+/// - Name
+/// - Bio
+/// - Profile Pic
 
 class EditProfilePage extends StatefulWidget {
+  final String uid;
   EditProfilePage({this.uid});
-
-  String uid;
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
@@ -19,14 +24,12 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   String _imageUrl;
-
+  File _image;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
-
-  File _image;
-
   final picker = ImagePicker();
 
+  // Grabs profile picture of current profile page
   Future getImage() async {
     final pickedFile =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 75);
@@ -49,6 +52,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     print(_imageUrl);
   }
 
+  // Activates camera to set imageurl to desired photo
   Future getCamera() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
 
@@ -193,10 +197,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ],
                 ),
               ),
-              // Padding(
-              //     padding: const EdgeInsets.all(16.0),
-              //     child:
-              //         MaterialButton(onPressed: () {}, child: Text("Logout")))
             ],
           );
         });

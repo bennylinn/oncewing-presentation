@@ -1,10 +1,8 @@
 import 'package:OnceWing/models/profile.dart';
-import 'package:OnceWing/screens/home/profile_list.dart';
 import 'package:OnceWing/services/database.dart';
-import 'package:OnceWing/shared/game_order.dart';
 import 'package:OnceWing/shared/generate_court.dart';
 import 'package:OnceWing/shared/loading.dart';
-import 'package:OnceWing/shared/profile_list_mini.dart';
+import 'package:OnceWing/components/profile_widgets/profile_list_mini.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

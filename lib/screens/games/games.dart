@@ -5,7 +5,6 @@ import 'package:OnceWing/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:OnceWing/services/database.dart';
 import 'package:provider/provider.dart';
-import 'package:OnceWing/screens/home/profile_list.dart';
 
 class Courts extends StatefulWidget {
   String gameid;

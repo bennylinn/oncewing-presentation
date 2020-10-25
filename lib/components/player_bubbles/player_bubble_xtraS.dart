@@ -1,6 +1,5 @@
 import 'package:OnceWing/models/user.dart';
 import 'package:OnceWing/services/database.dart';
-import 'package:OnceWing/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:OnceWing/models/profile.dart';
 import 'package:provider/provider.dart';

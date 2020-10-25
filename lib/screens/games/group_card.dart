@@ -15,48 +15,51 @@ class _GroupCardState extends State<GroupCard> {
     var groups = Provider.of<List<GroupData>>(context);
     groups.removeWhere((group) => (group.groupName == "Friendly"));
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: ListView.builder(
-          itemCount: groups.length,
-          itemBuilder: (context, index) {
-            var group = groups[index];
-            var prfs = Provider.of<List<Profile>>(context) ?? [];
-            prfs = prfs
-                .where((profile) => group.uids.contains(profile.uid))
-                .toList();
+    return ListView.builder(
+        itemCount: groups.length,
+        itemBuilder: (context, index) {
+          var group = groups[index];
+          var prfs = Provider.of<List<Profile>>(context) ?? [];
+          prfs = prfs
+              .where((profile) => group.uids.contains(profile.uid))
+              .toList();
 
-            return Card(
-                color: Colors.transparent,
-                child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blue),
-                      borderRadius: BorderRadius.circular(12),
+          return Container(
+              child: ExpansionTile(
+                  trailing: Container(
+                    width: 80,
+                    child: Row(
+                      children: [
+                        Text(
+                          "Sun ",
+                          style:
+                              TextStyle(color: Colors.grey[500], fontSize: 18),
+                        ),
+                        Text(
+                          "7 PM",
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        )
+                      ],
                     ),
-                    child: ExpansionTile(
-                        trailing: Icon(
-                          Icons.arrow_drop_down_circle,
-                          color: Colors.blue[100],
-                        ),
-                        title: Text(
-                          '${group.groupName}',
-                          style: TextStyle(color: Color(0xffC49859)),
-                        ),
-                        subtitle: Text(
-                          '${group.type}',
-                          style: TextStyle(color: Colors.blue[100]),
-                        ),
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: Events(
-                              group: group,
-                              mini: true,
-                              profiles: prfs,
-                            ),
-                          ),
-                        ])));
-          }),
-    );
+                  ),
+                  title: Text(
+                    '${group.groupName}',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  subtitle: Text(
+                    '${group.type}',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: Events(
+                    group: group,
+                    mini: true,
+                    profiles: prfs,
+                  ),
+                ),
+              ]));
+        });
   }
 }

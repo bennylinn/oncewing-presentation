@@ -1,6 +1,4 @@
-import 'package:OnceWing/models/game_group.dart';
 import 'package:OnceWing/models/profile.dart';
-import 'package:OnceWing/screens/home/profile_tile.dart';
 import 'package:OnceWing/screens/profile/profile_wrapper.dart';
 import 'package:OnceWing/screens/world/profile_tile_noGame.dart';
 import 'package:flutter/material.dart';

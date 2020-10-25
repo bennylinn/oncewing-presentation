@@ -1,6 +1,4 @@
 import 'package:OnceWing/models/profile.dart';
-import 'package:OnceWing/screens/home/profile_tile.dart';
-import 'package:OnceWing/services/database.dart';
 import 'package:OnceWing/services/group_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

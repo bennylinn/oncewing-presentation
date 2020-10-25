@@ -1,13 +1,12 @@
-import 'package:OnceWing/models/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CountButton extends StatefulWidget {
-  List<dynamic> count;
-  Function(List<int>, int) callback;
-  int index;
-  double height;
-  double width;
+  final List<dynamic> count;
+  final Function(List<int>, int) callback;
+  final int index;
+  final double height;
+  final double width;
   CountButton(this.count, this.callback, this.index, this.height, this.width);
 
   @override

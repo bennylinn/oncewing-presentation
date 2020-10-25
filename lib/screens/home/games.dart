@@ -2,7 +2,7 @@ import 'package:OnceWing/models/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:OnceWing/services/database.dart';
 import 'package:provider/provider.dart';
-import 'package:OnceWing/screens/home/profile_list.dart';
+import 'package:OnceWing/components/profile_widgets/profile_list.dart';
 
 class Games extends StatelessWidget {
   @override

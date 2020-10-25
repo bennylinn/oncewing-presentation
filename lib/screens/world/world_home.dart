@@ -4,15 +4,12 @@ import 'package:OnceWing/models/profile.dart';
 import 'package:OnceWing/models/user.dart';
 import 'package:OnceWing/screens/games/group_card.dart';
 import 'package:OnceWing/screens/world/add_group.dart';
-import 'package:OnceWing/screens/world/feed.dart';
 import 'package:OnceWing/screens/world/group_stream_wrapper.dart';
 import 'package:OnceWing/screens/world/leaderboard.dart';
 import 'package:OnceWing/screens/world/structuredGrid.dart';
-import 'package:OnceWing/screens/world/uploader_wrapper.dart';
 import 'package:OnceWing/services/database.dart';
 import 'package:OnceWing/services/game_database.dart';
 import 'package:OnceWing/services/group_database.dart';
-import 'package:OnceWing/shared/structured_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +26,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    view = 'feed';
+    view = 'groups';
   }
 
   changeView(String viewName) {
@@ -38,35 +35,63 @@ class _HomeState extends State<Home> {
     });
   }
 
-  Row buildImageViewButtonBar() {
-    Color isActiveButtonColor(String viewName) {
+  ListView buildImageViewButtonBar() {
+    LinearGradient isActiveButtonColor(String viewName) {
       if (view == viewName) {
-        return Colors.blueAccent;
+        return LinearGradient(
+            colors: [Color(0xffC49859), Color(0xffF4C8A9)],
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight);
       } else {
-        return Colors.white;
+        return LinearGradient(
+            colors: [Color(0xff142A3D), Color(0xff464C56)],
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight);
       }
     }
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return ListView(
+      scrollDirection: Axis.horizontal,
       children: <Widget>[
-        IconButton(
-          icon: Icon(Icons.video_library, color: isActiveButtonColor("feed")),
-          onPressed: () {
-            changeView("feed");
-          },
+        Container(
+          width: MediaQuery.of(context).size.width / 3,
+          margin: EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              gradient: isActiveButtonColor("groups")),
+          child: IconButton(
+            icon: Icon(Icons.group, color: Colors.black),
+            onPressed: () {
+              changeView("groups");
+            },
+          ),
         ),
-        IconButton(
-          icon: Icon(Icons.list, color: isActiveButtonColor("leaderboards")),
-          onPressed: () {
-            changeView("leaderboards");
-          },
+        Container(
+          width: MediaQuery.of(context).size.width / 3,
+          margin: EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              color: Colors.white,
+              gradient: isActiveButtonColor("leaderboards")),
+          child: IconButton(
+            icon: Icon(Icons.list, color: Colors.black),
+            onPressed: () {
+              changeView("leaderboards");
+            },
+          ),
         ),
-        IconButton(
-          icon: Icon(Icons.group, color: isActiveButtonColor("groups")),
-          onPressed: () {
-            changeView("groups");
-          },
+        Container(
+          width: MediaQuery.of(context).size.width / 3,
+          margin: EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              gradient: isActiveButtonColor("maps")),
+          child: IconButton(
+            icon: Icon(Icons.map, color: Colors.black),
+            onPressed: () {
+              changeView("maps");
+            },
+          ),
         ),
       ],
     );
@@ -90,21 +115,6 @@ class _HomeState extends State<Home> {
                   );
                 });
           });
-    } else if (view == 'feed') {
-      User user = Provider.of<User>(context);
-
-      return FloatingActionButton(
-          backgroundColor: Colors.blue[800],
-          child: Icon(Icons.file_upload),
-          onPressed: () {
-            showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  return StreamProvider.value(
-                      value: DatabaseService(uid: user.uid).userData,
-                      child: UploaderWrapper());
-                });
-          });
     } else if (view == 'leaderboards') {
       return Container(
         height: 0,
@@ -116,15 +126,14 @@ class _HomeState extends State<Home> {
     if (view == 'groups') {
       return Container(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Text('Groups',
-                  style: TextStyle(
-                      color: Color(0xffC49859),
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300)),
-            ),
             SizedBox(height: 10),
+            Text('   Groups',
+                style: TextStyle(
+                    color: Color(0xffC49859),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w300)),
             Expanded(
               child: MultiProvider(
                   providers: [
@@ -161,22 +170,6 @@ class _HomeState extends State<Home> {
               ),
             ],
           )));
-    } else if (viewName == 'feed') {
-      return Container(
-        padding: EdgeInsets.symmetric(horizontal: 8),
-        // width: MediaQuery.of(context).size.width,
-        child: Column(
-          children: [
-            Text('Feed',
-                style: TextStyle(
-                    color: Color(0xffC49859),
-                    fontSize: 20,
-                    fontWeight: FontWeight.w300)),
-            Expanded(child: Feed()),
-          ],
-        ),
-        // child: VideoInListOfCards(_controller),
-      );
     }
   }
 
@@ -200,17 +193,7 @@ class _HomeState extends State<Home> {
             // Container(
             //   child: MoveCamera(),
             // ), ---------------------> Maps (don't need for now)
-            Divider(
-              height: 0,
-              thickness: 1,
-              color: Color(0xffC49859),
-            ),
-            buildImageViewButtonBar(),
-            Divider(
-              height: 10,
-              thickness: 1,
-              color: Color(0xffC49859),
-            ),
+            Container(height: 100, child: buildImageViewButtonBar()),
             Expanded(child: showView(view))
           ],
         ),

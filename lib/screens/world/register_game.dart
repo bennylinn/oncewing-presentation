@@ -1,4 +1,4 @@
-import 'package:OnceWing/shared/scrolled_form.dart';
+import 'package:OnceWing/components/scrolled_form.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 

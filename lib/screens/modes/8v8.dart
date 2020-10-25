@@ -1,19 +1,18 @@
 import 'dart:collection';
-import 'package:OnceWing/buttons/toggle.dart';
+import 'package:OnceWing/components/buttons/toggle.dart';
 import 'package:OnceWing/models/game.dart';
 import 'package:OnceWing/models/profile.dart';
 import 'package:OnceWing/models/user.dart';
 import 'package:OnceWing/services/database.dart';
 import 'package:OnceWing/services/game_database.dart';
-import 'package:OnceWing/shared/alert.dart';
-import 'package:OnceWing/shared/animated_button.dart';
+import 'package:OnceWing/components/buttons/animated_button.dart';
 import 'package:OnceWing/shared/game_order.dart';
 import 'package:OnceWing/shared/generate_court.dart';
-import 'package:OnceWing/shared/meth.dart';
+import 'package:OnceWing/shared/ranking_algo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:OnceWing/buttons/counterpage.dart';
+import 'package:OnceWing/components/buttons/counterpage.dart';
 
 class Eights extends StatefulWidget {
   // NumberOfCourts
@@ -828,9 +827,6 @@ class _PlayerListState extends State<Eights> {
                                                 print('checkuh here');
                                                 print(getMapFromList(
                                                     queue.toList()));
-                                                // print(Map.fromIterable(
-                                                //     queueFinished));
-                                                // print(Map.fromIterable(inGameUids));
 
                                                 GameDatabaseService()
                                                     .updateGameData(

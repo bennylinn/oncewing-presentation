@@ -1,9 +1,7 @@
 import 'package:OnceWing/models/user.dart';
-import 'package:OnceWing/screens/modes/player_bubble_xtraS.dart';
-import 'package:OnceWing/screens/profile/profile.dart';
+import 'package:OnceWing/components/player_bubbles/player_bubble_xtraS.dart';
 import 'package:OnceWing/screens/profile/profile_wrapper.dart';
 import 'package:OnceWing/services/database.dart';
-import 'package:OnceWing/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:OnceWing/models/profile.dart';
 import 'package:provider/provider.dart';

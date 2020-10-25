@@ -1,4 +1,4 @@
-import 'package:OnceWing/messaging/friend_list.dart';
+import 'package:OnceWing/services/messaging/friend_list.dart';
 import 'package:OnceWing/models/user.dart';
 import 'package:OnceWing/screens/world/world_home.dart';
 import 'package:OnceWing/screens/home/settings_form.dart';
@@ -7,13 +7,21 @@ import 'package:OnceWing/screens/profile/profile_wrapper.dart';
 import 'package:OnceWing/screens/shop/shop.dart';
 import 'package:OnceWing/services/auth.dart';
 import 'package:OnceWing/services/database.dart';
-import 'package:OnceWing/services/storage.dart';
-import 'package:OnceWing/shared/empty_container.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:OnceWing/shared/destination_view.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' show Platform;
+
+/// Home Wrapper Page
+/// Wraps the following 5 pages:
+/// - Temple Page
+/// - World Page
+/// - Profile Page (default page)
+/// - Play Page
+/// - Shope page
+///
+/// The wrapper include a bottom navbar to navigate between the pages
 
 class HomePage extends StatefulWidget {
   @override
@@ -23,7 +31,20 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with TickerProviderStateMixin<HomePage> {
   int _bottomSelectedIndex = 2;
+  final AuthService _auth = AuthService();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
+  // Requests notification permissions for iOS upon first sign in
+  @override
+  initState() {
+    super.initState();
+    if (Platform.isIOS) {
+      _firebaseMessaging
+          .requestNotificationPermissions(IosNotificationSettings());
+    }
+  }
+
+  // Crops an image to a circular form
   Widget circularize(NetworkImage image) {
     return new Container(
         width: 190.0,
@@ -36,63 +57,20 @@ class _HomePageState extends State<HomePage>
             )));
   }
 
-  final AuthService _auth = AuthService();
-
-  // showUpgrade(BuildContext parentContext, String transition) {
-  //   showGeneralDialog(
-  //     barrierDismissible: false,
-  //     barrierColor: Colors.black,
-  //     transitionDuration: Duration(milliseconds: 300),
-  //     context: context,
-  //     pageBuilder: (BuildContext context, Animation animation, Animation secondAnimation) {
-  //     // player.play("silverToGold.mp3");
-  //     Future.delayed(Duration(seconds: 8), () {
-
-  //       Navigator.of(context).pop(true);
-  //     });
-  //     return Container(
-  //       height: MediaQuery.of(context).size.height,
-  //       width: MediaQuery.of(context).size.width,
-  //       decoration: BoxDecoration(
-  //         image: DecorationImage(
-  //           image: AssetImage('assets/$transition.gif'),
-  //           fit: BoxFit.fitWidth
-  //           )
-  //         ),
-  //       child: Container(
-  //         height: MediaQuery.of(context).size.height,
-  //         width: MediaQuery.of(context).size.width,
-  //         child: FlatButton(
-  //           child: Container(height: 0,),
-  //           onPressed: () {Navigator.pop(context);},
-  //         ),
-  //       )
-  //       );
-  //     }
-  //   );
-  // }
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-
-  @override
-  initState() {
-    super.initState();
-    if (Platform.isIOS) {
-      _firebaseMessaging
-          .requestNotificationPermissions(IosNotificationSettings());
-    }
-  }
-
+  // Sets new page index state
   void pageChanged(int index) {
     setState(() {
       _bottomSelectedIndex = index;
     });
   }
 
+  // Controller for page index
   PageController pageController = PageController(
     initialPage: 2,
     keepPage: true,
   );
 
+  // Builds selected page view
   Widget buildPageView(UserData user) {
     return PageView(
       physics: NeverScrollableScrollPhysics(),
@@ -101,7 +79,7 @@ class _HomePageState extends State<HomePage>
         pageChanged(index);
       },
       children: <Widget>[
-        EmptyContainer(),
+        Shop(),
         Home(),
         ProfileWrapper(uid: user.uid),
         ModeWrapper(),
@@ -110,6 +88,7 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  // Animates to next page if bottom navbar is tapped
   void bottomTapped(int index) {
     setState(() {
       _bottomSelectedIndex = index;
@@ -118,8 +97,11 @@ class _HomePageState extends State<HomePage>
     });
   }
 
+  // Builds the settings panel as a modal bottom sheet
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
+
     void _showSettingsPanel() {
       showModalBottomSheet(
           context: context,
@@ -138,16 +120,12 @@ class _HomePageState extends State<HomePage>
           isScrollControlled: true);
     }
 
-    final user = Provider.of<User>(context);
-
     return StreamBuilder<UserData>(
         stream: DatabaseService(uid: user.uid).userData,
         builder: (context, snapshot) {
           Widget _screen;
 
           UserData userData = snapshot.data;
-          // List<Profile> profiles = Provider.of<List<Profile>>(context);
-
           _screen = SafeArea(
             bottom: false,
             top: true,

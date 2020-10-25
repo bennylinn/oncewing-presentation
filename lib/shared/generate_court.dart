@@ -1,5 +1,5 @@
 import 'package:OnceWing/models/profile.dart';
-import 'package:OnceWing/screens/modes/player_bubble.dart';
+import 'package:OnceWing/components/player_bubbles/player_bubble.dart';
 import 'package:OnceWing/screens/profile/profile_wrapper.dart';
 import 'package:flutter/material.dart';
 

@@ -1,32 +1,25 @@
+import 'package:OnceWing/components/profile_widgets/profilecard1.dart';
+import 'package:OnceWing/components/profile_widgets/profilecard2.dart';
 import 'package:OnceWing/models/user.dart';
 import 'package:OnceWing/screens/modes/go_to_live_game.dart';
 import 'package:OnceWing/screens/profile/edit_profile_page.dart';
-import 'package:OnceWing/screens/profile/experience.dart';
+import 'package:OnceWing/shared/experience.dart';
 import 'package:OnceWing/screens/profile/match_history.dart';
-import 'package:OnceWing/screens/profile/stat_column.dart';
-import 'package:OnceWing/screens/profile/stories.dart';
-import 'package:OnceWing/screens/profile/story_repo.dart';
 import 'package:OnceWing/services/database.dart';
-import 'package:OnceWing/services/game_database.dart';
 import 'package:OnceWing/services/mediacache.dart';
 import 'package:OnceWing/services/messaging.dart';
 import 'package:OnceWing/services/storage.dart';
 import 'package:OnceWing/shared/alert.dart';
-import 'package:OnceWing/shared/exp_loader.dart';
-import 'package:OnceWing/shared/json_editor.dart';
-import 'package:OnceWing/shared/loading.dart';
 import 'package:OnceWing/shared/video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/rendering.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({this.userData});
-
   final UserData userData;
+  const ProfilePage({this.userData});
 
   @override
   _ProfilePageState createState() => _ProfilePageState(this.userData);
@@ -53,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   initState() {
     super.initState();
-    // sets profile image url
+    // Sets profile image url
     CloudStorageService(uid: userData.uid)
         .getFirebaseProfileUrl()
         .then((value) {
@@ -63,7 +56,8 @@ class _ProfilePageState extends State<ProfilePage>
           .then((value) => profilePic = FileImage(value.file));
     });
 
-    // sets stories first img url
+    // Sets stories first img url
+    /*
     CloudStorageService(uid: userData.uid)
         .getStoryJsonUrl()
         .then((value) => Repository.getOnceWingStories(value))
@@ -98,11 +92,12 @@ class _ProfilePageState extends State<ProfilePage>
         });
       }
     });
+    */
   }
 
+  // Builds a nested sliver header
   nested(BuildContext context, Widget child, UserData user) {
-    var _scrollcontroller =
-        ScrollController(); // initialScrollOffset: !(_currentIndex==2) ? 270) ;
+    var _scrollcontroller = ScrollController();
 
     return NestedScrollView(
       controller: _scrollcontroller,
@@ -117,15 +112,15 @@ class _ProfilePageState extends State<ProfilePage>
                 style: TextStyle(
                     fontSize: 22.0,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blue[100]),
+                    color: Colors.white),
               ),
               Container(
                   margin: const EdgeInsets.only(top: 4.0),
                   child: Text(
                     label,
                     style: TextStyle(
-                        color: Colors.blue[100],
-                        fontSize: 15.0,
+                        color: Colors.grey,
+                        fontSize: 12.0,
                         fontWeight: FontWeight.w400),
                   ))
             ],
@@ -142,11 +137,11 @@ class _ProfilePageState extends State<ProfilePage>
             child: FlatButton(
                 onPressed: function,
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: EdgeInsets.symmetric(horizontal: 0),
                   decoration: BoxDecoration(
-                      color: backgroundcolor,
-                      border: Border.all(color: borderColor),
-                      borderRadius: BorderRadius.circular(5.0)),
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(4)),
+                  width: 80,
                   alignment: Alignment.center,
                   child: Text(text,
                       style: TextStyle(
@@ -193,10 +188,6 @@ class _ProfilePageState extends State<ProfilePage>
             }
           }
 
-          // already following user - should show unfollow button
-
-          // does not follow user - should show follow button
-
           return buildFollowButton(
               text: "loading...",
               backgroundcolor: Colors.white,
@@ -207,7 +198,7 @@ class _ProfilePageState extends State<ProfilePage>
         return <Widget>[
           SliverAppBar(
             backgroundColor: Color(0xff050E14),
-            expandedHeight: 340,
+            expandedHeight: 265,
             floating: false,
             pinned: false,
             flexibleSpace: FlexibleSpaceBar(
@@ -222,22 +213,6 @@ class _ProfilePageState extends State<ProfilePage>
                         });
                       }
 
-                      Image showHelmet(int rank) {
-                        if (rank < 1500) {
-                          return Image(
-                            image: AssetImage('assets/Silver.png'),
-                          );
-                        } else if (1700 <= rank) {
-                          return Image(
-                            image: AssetImage('assets/Plat.png'),
-                          );
-                        } else {
-                          return Image(
-                            image: AssetImage('assets/Gold.png'),
-                          );
-                        }
-                      }
-
                       UserData userData;
                       int level;
                       if (snapshot.hasData) {
@@ -245,7 +220,7 @@ class _ProfilePageState extends State<ProfilePage>
                         level = Experience(userData.exp).level();
 
                         return Container(
-                          height: 400,
+                          height: 265,
                           width: MediaQuery.of(context).size.width,
                           child: Column(
                             children: [
@@ -265,157 +240,76 @@ class _ProfilePageState extends State<ProfilePage>
                                         Color(0xff273741),
                                         Color(0xff050E14)
                                       ]),
-                                  image: DecorationImage(
-                                      image: (userData.clan == 'None')
-                                          ? AssetImage('assets/fullDragon.png')
-                                          : AssetImage(
-                                              'assets/${userData.clan}Wing.png'),
-                                      fit: BoxFit.fitWidth),
                                 ),
-                                padding: EdgeInsets.only(
-                                    top: 40, left: 10, right: 10, bottom: 0),
+                                padding: EdgeInsets.all(16),
                                 child: Container(
-                                  child: Column(
+                                  padding: EdgeInsets.only(top: 30),
+                                  child: Row(
                                     children: [
                                       Container(
-                                        width:
-                                            MediaQuery.of(context).size.width -
-                                                100,
-                                        height: 150,
-                                        child: Column(
-                                          //crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            // CircleAvatar(
-                                            //   radius: 90,
-                                            //   backgroundColor: Colors.transparent,
-                                            // backgroundImage: (userData.rank >= 1700) ? AssetImage('assets/diamondWing.png') : (userData.rank>=1600) ? AssetImage('assets/platinum_wing.png') : AssetImage('assets/avatar_wing.png'),
-                                            // child:
-                                            InkWell(
-                                              child: CircleAvatar(
-                                                radius: 42,
-                                                backgroundColor:
-                                                    Colors.blue[200],
-                                                child: CircleAvatar(
-                                                  backgroundColor: Colors.white,
-                                                  radius: 40,
-                                                  // backgroundColor: Colors.transparent,
-                                                  backgroundImage: AssetImage(
-                                                      'assets/profile-icon-empty.png'),
-                                                  child: !(_url == null ||
-                                                          profilePic == null)
-                                                      ? circularize(profilePic)
-                                                      : Container(
-                                                          height: 0,
-                                                        ),
+                                        width: 130,
+                                        height: 130,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: Colors.black,
+                                            image: DecorationImage(
+                                                image: (_url == null ||
+                                                        profilePic == null)
+                                                    ? AssetImage(
+                                                        'assets/profile-icon-empty.png')
+                                                    : profilePic,
+                                                fit: BoxFit.fitWidth)),
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 10),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 16.0),
+                                                child: Text(
+                                                  '${userData.name}',
+                                                  style: TextStyle(
+                                                    color: Color(0xffC49859),
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w300,
+                                                  ),
                                                 ),
                                               ),
-                                              onTap: () {
-                                                Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          StreamBuilder<Object>(
-                                                              stream: null,
-                                                              builder: (context,
-                                                                  snapshot) {
-                                                                return Whatsapp(
-                                                                  profile:
-                                                                      userData,
-                                                                  image:
-                                                                      makeThumbnail(
-                                                                          _url),
-                                                                );
-                                                              })),
-                                                );
-                                              },
-                                              onLongPress: () {
-                                                if (currentUserId ==
-                                                    userData.uid) {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return AlertDialog(
-                                                          title: Text(
-                                                              'Share Story'),
-                                                          content:
-                                                              SingleChildScrollView(
-                                                            child: ListBody(
-                                                              children: <
-                                                                  Widget>[
-                                                                Text(
-                                                                    'Upload from gallery or take a picture.'),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          actions: [
-                                                            FlatButton(
-                                                              child: Text(
-                                                                  'Gallery'),
-                                                              onPressed: () {
-                                                                JsonEdit(
-                                                                        uid: userData
-                                                                            .uid)
-                                                                    .getImage(
-                                                                        'gallery',
-                                                                        context);
-                                                                Navigator.pop(
-                                                                    context);
-                                                              },
-                                                            ),
-                                                            FlatButton(
-                                                              child: Text(
-                                                                  'Take Picture'),
-                                                              onPressed: () {
-                                                                JsonEdit(
-                                                                        uid: userData
-                                                                            .uid)
-                                                                    .getImage(
-                                                                        'camera',
-                                                                        context);
-                                                                Navigator.pop(
-                                                                    context);
-                                                              },
-                                                            ),
-                                                          ],
-                                                        );
-                                                      });
-                                                }
-                                              },
-                                              onDoubleTap: () {
-                                                if (currentUserId ==
-                                                    userData.uid) {
-                                                  JsonEdit(uid: userData.uid)
-                                                      .deleteStory();
-                                                  CloudStorageService(
-                                                          uid: userData.uid)
-                                                      .deleteStoryJson();
-                                                }
-                                              },
-                                            ),
-                                            // ),
-                                            Spacer(
-                                              flex: 2,
-                                            ),
-                                            Text(
-                                              '${userData.name}',
-                                              style: TextStyle(
-                                                color: Color(0xffC49859),
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w300,
+                                              SizedBox(
+                                                height: 5,
                                               ),
-                                            ),
-                                            Spacer(
-                                              flex: 1,
-                                            ),
-                                            Text(
-                                              '${userData.clan} Clan',
-                                              style: TextStyle(
-                                                color: Colors.blue[100],
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w300,
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 16.0),
+                                                child: Text(
+                                                  'Vancouver, BC',
+                                                  style: TextStyle(
+                                                    color: Colors.blue[100],
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w300,
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    buildProfileFollowButton(
+                                                        userData),
+                                                  ]),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -423,137 +317,131 @@ class _ProfilePageState extends State<ProfilePage>
                                 ),
                               ),
                               Divider(
-                                color: Color(0xffC49859),
+                                color: Colors.lightBlue[900],
                                 thickness: 1,
-                                height: 1,
+                                height: 0,
                               ),
                               Container(
-                                color: Color(0xffC49859),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
+                                color: Colors.transparent,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: Color(0xff050E14),
                                   ),
-                                  padding: const EdgeInsets.only(left: 24.0),
-                                  height: 139,
+                                  height: 65,
                                   width: MediaQuery.of(context).size.width,
                                   child: Center(
                                     child: Row(
                                       children: <Widget>[
-                                        Container(
-                                          height: 100,
-                                          width: 80,
-                                          child: Column(
-                                            children: [
+                                        Expanded(
+                                          flex: 1,
+                                          child: Row(
+                                            children: <Widget>[
                                               Container(
-                                                alignment: Alignment.center,
-                                                height: 80,
-                                                width: 80,
-                                                child: ExperienceLoader(
-                                                  child: showHelmet(
-                                                      userData.rank.round()),
-                                                  size: 130,
-                                                  exp: userData.exp,
-                                                ),
+                                                width: (MediaQuery.of(context)
+                                                            .size
+                                                            .width -
+                                                        6) /
+                                                    3,
+                                                child: buildStatColumn("fans",
+                                                    userData.followers.length),
                                               ),
-                                              Center(
-                                                child: Text(
-                                                  'Lvl $level',
-                                                  style: TextStyle(
-                                                      color: Colors.blue[100]),
+                                              Container(
+                                                width: 3,
+                                                decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                        begin:
+                                                            Alignment.topCenter,
+                                                        end: Alignment
+                                                            .bottomCenter,
+                                                        stops: [
+                                                      0.1,
+                                                      0.5,
+                                                      0.9
+                                                    ],
+                                                        colors: [
+                                                      Color(0xff050E14),
+                                                      Color(0xff273741),
+                                                      Color(0xff050E14)
+                                                    ])),
+                                              ),
+                                              Container(
+                                                width: (MediaQuery.of(context)
+                                                            .size
+                                                            .width -
+                                                        6) /
+                                                    3,
+                                                child: buildStatColumn(
+                                                    "following",
+                                                    userData.following.length),
+                                              ),
+                                              Container(
+                                                width: 3,
+                                                decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                        begin:
+                                                            Alignment.topCenter,
+                                                        end: Alignment
+                                                            .bottomCenter,
+                                                        stops: [
+                                                      0.1,
+                                                      0.5,
+                                                      0.9
+                                                    ],
+                                                        colors: [
+                                                      Color(0xff050E14),
+                                                      Color(0xff273741),
+                                                      Color(0xff050E14)
+                                                    ])),
+                                              ),
+                                              Expanded(
+                                                child: InkWell(
+                                                  child: Container(
+                                                      child: Center(
+                                                    child: Text('In Game',
+                                                        style: TextStyle(
+                                                          fontSize: 15,
+                                                          color: (userData
+                                                                      .status ==
+                                                                  'Online')
+                                                              ? Colors.grey
+                                                              : Colors.red,
+                                                        )),
+                                                  )),
+                                                  onTap: () {
+                                                    if (userData.status !=
+                                                        'Online') {
+                                                      Navigator.of(context).push(
+                                                          MaterialPageRoute(
+                                                              builder: (BuildContext
+                                                                      context) =>
+                                                                  StreamProvider
+                                                                      .value(
+                                                                    value: DatabaseService()
+                                                                        .profiles,
+                                                                    child:
+                                                                        GoLiveGame(
+                                                                      gameid: userData
+                                                                          .status,
+                                                                    ),
+                                                                  )));
+                                                    }
+                                                  },
                                                 ),
                                               )
                                             ],
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 1,
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 10.0),
-                                            child: Column(
-                                              children: <Widget>[
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 16),
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly,
-                                                    children: <Widget>[
-                                                      buildStatColumn(
-                                                          "rank",
-                                                          userData.rank
-                                                              .round()),
-                                                      buildStatColumn("wins",
-                                                          userData.wins),
-                                                      buildStatColumn(
-                                                          "followers",
-                                                          userData.followers
-                                                              .length),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 8.0),
-                                                  child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.max,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceEvenly,
-                                                      children: <Widget>[
-                                                        buildProfileFollowButton(
-                                                            userData),
-                                                        InkWell(
-                                                          child:
-                                                              buildFollowButton(
-                                                                  text:
-                                                                      'In Game',
-                                                                  backgroundcolor:
-                                                                      Colors
-                                                                          .white,
-                                                                  textColor: (userData
-                                                                              .status ==
-                                                                          'Online')
-                                                                      ? Colors
-                                                                          .grey
-                                                                      : Colors
-                                                                          .red,
-                                                                  borderColor:
-                                                                      Colors
-                                                                          .grey,
-                                                                  function: () {
-                                                                    if (userData
-                                                                            .status !=
-                                                                        'Online') {
-                                                                      Navigator.of(context).push(MaterialPageRoute(
-                                                                          builder: (BuildContext context) => StreamProvider.value(
-                                                                                value: DatabaseService().profiles,
-                                                                                child: GoLiveGame(
-                                                                                  gameid: userData.status,
-                                                                                ),
-                                                                              )));
-                                                                    }
-                                                                  }),
-                                                          onTap: () {},
-                                                        )
-                                                      ]),
-                                                ),
-                                              ],
-                                            ),
                                           ),
                                         )
                                       ],
                                     ),
                                   ),
                                 ),
+                              ),
+                              Divider(
+                                color: Colors.lightBlue[900],
+                                thickness: 1,
+                                height: 0,
                               ),
                             ],
                           ),
@@ -669,21 +557,6 @@ class _ProfilePageState extends State<ProfilePage>
     });
   }
 
-  // Firestore.instance
-  //       .collection("insta_a_feed")
-  //       .document(profileId)
-  //       .collection("items")
-  //       .document(currentUserId)
-  //       .setData({
-  //     "ownerId": profileId,
-  //     "username": currentUserModel.username,
-  //     "userId": currentUserId,
-  //     "type": "follow",
-  //     "userProfileImg": currentUserModel.photoUrl,
-  //     "timestamp": DateTime.now()
-  //   });
-  // }
-
   Widget circularize(image) {
     return new Container(
         width: 190.0,
@@ -735,145 +608,24 @@ class _ProfilePageState extends State<ProfilePage>
       );
     }
 
+    PageController pageController = PageController(
+      initialPage: 0,
+      keepPage: false,
+    );
+
     Container buildUserPosts() {
-      Future<List<FileImage>> getPosts() async {
-        List<FileImage> posts = [];
-
-        var pic1r =
-            await CloudStorageService(uid: userData.uid).getThreePicsUrl(1);
-        var pic2r =
-            await CloudStorageService(uid: userData.uid).getThreePicsUrl(2);
-        var pic3r =
-            await CloudStorageService(uid: userData.uid).getThreePicsUrl(3);
-        var urls = [pic1r, pic2r, pic3r];
-
-        urls.forEach((url) async {
-          await CacheManagerr()
-              .getFileInfo(url)
-              .then((value) => posts.add(FileImage(value.file)));
-        });
-
-        return posts;
-      }
-
-      popupAction(value) {
-        if (value == "Upload") {
-          CloudStorageService(uid: userData.uid).uploadHighlightVid();
-        } else if (value == "Delete") {
-          showAlertDialog(
-              context,
-              "Delete Video",
-              "Are you sure you want to delete this video?",
-              CloudStorageService(uid: userData.uid).deleteHighlight,
-              'Highlight.mp4');
-        }
-      }
-
       return Container(
-          child: FutureBuilder<List<FileImage>>(
-        future: getPosts(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Container(
-                alignment: FractionalOffset.center,
-                padding: const EdgeInsets.only(top: 10.0),
-                child: CircularProgressIndicator());
-          else if (view == "grid") {
-            // build the grid
-            return Container(
-              height: 400,
-              child: Column(
-                children: [
-                  GridView.count(
-                      primary: false,
-                      crossAxisCount: 3,
-                      childAspectRatio: 1.0,
-                      padding: const EdgeInsets.all(0.5),
-                      mainAxisSpacing: 1.5,
-                      crossAxisSpacing: 1.5,
-                      shrinkWrap: true,
-                      children: snapshot.data.map((FileImage imagePost) {
-                        return GridTile(
-                            child: ImageTile(
-                          Container(
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: imagePost, fit: BoxFit.fitWidth))),
-                          currentUserId,
-                          userData.uid,
-                        ));
-                      }).toList()),
-                  SizedBox(
-                    height: 1,
-                  ),
-                  Stack(children: [
-                    Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.2),
-                        ),
-                        padding: EdgeInsets.all(0),
-                        height: 230,
-                        width: MediaQuery.of(context).size.width,
-                        child: (_highlightUrl == null)
-                            ? Center(
-                                child: Text('Highlight Reel',
-                                    style: TextStyle(
-                                        color: Colors.blue[100],
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.w400)),
-                              )
-                            : ((vp == null) ? Loading() : vp)),
-                    (userData.uid == currentUserId)
-                        ? Positioned(
-                            top: 0,
-                            right: 0,
-                            child: Container(
-                                height: 40,
-                                width: 40,
-                                child: PopupMenuButton(
-                                  onSelected: (value) {
-                                    popupAction(value);
-                                  },
-                                  child: Icon(
-                                    Icons.more_vert,
-                                    color: Colors.blue[100],
-                                    size: 20,
-                                  ),
-                                  itemBuilder: (context) {
-                                    return [
-                                      PopupMenuItem(
-                                        value: 'Upload',
-                                        child: Text(
-                                          'Upload',
-                                          style: TextStyle(
-                                              color: Colors.blue[400]),
-                                        ),
-                                      ),
-                                      PopupMenuItem(
-                                        value: 'Delete',
-                                        child: Text(
-                                          'Delete',
-                                          style:
-                                              TextStyle(color: Colors.red[300]),
-                                        ),
-                                      ),
-                                    ];
-                                  },
-                                )))
-                        : Container(height: 0),
-                  ]),
-                ],
-              ),
-            );
-          } else if (view == "feed") {
-            return PlayerMatchHistory(uid: userData.uid);
-          } else if (view == "history") {
-            return StatColumn(
-              uid: userData.uid,
-            );
-          }
-        },
-      ));
+        height: 300,
+        child: PageView(
+          controller: pageController,
+          children: <Widget>[
+            ProfileCard1(
+              userData: userData,
+            ),
+            ProfileCard2(userData: userData),
+          ],
+        ),
+      );
     }
 
     return StreamBuilder(
@@ -895,7 +647,7 @@ class _ProfilePageState extends State<ProfilePage>
                 Container(
                   decoration: BoxDecoration(
                       border: Border(
-                          top: BorderSide(color: Color(0xffC49859), width: 1)),
+                          top: BorderSide(color: Colors.blue[900], width: 0.5)),
                       gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -903,14 +655,12 @@ class _ProfilePageState extends State<ProfilePage>
                           colors: [Color(0xff021420), Color(0xff00484F)])),
                   child: ListView(
                     children: <Widget>[
-                      buildImageViewButtonBar(),
-                      Divider(
-                        height: 1.0,
-                        color: Colors.white,
-                      ),
                       buildUserPosts(),
                       SizedBox(
-                        height: 50,
+                        height: 10,
+                      ),
+                      PlayerMatchHistory(
+                        uid: userData.uid,
                       )
                     ],
                   ),

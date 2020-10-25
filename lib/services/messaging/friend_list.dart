@@ -1,6 +1,5 @@
-import 'package:OnceWing/messaging/friend_tile.dart';
+import 'package:OnceWing/services/messaging/friend_tile.dart';
 import 'package:OnceWing/models/profile.dart';
-import 'package:OnceWing/shared/profile_tile_mini.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

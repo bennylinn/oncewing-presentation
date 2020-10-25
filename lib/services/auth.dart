@@ -6,17 +6,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // create user ojb based on FirebaseUser
+  // Creates user object based on FirebaseUser
   User _userFromFirebaseUser(FirebaseUser user) {
     return user != null ? User(uid: user.uid) : null;
   }
 
-  // auth change user stream
+  // Auth to change user stream
   Stream<User> get user {
     return _auth.onAuthStateChanged.map(_userFromFirebaseUser);
   }
 
-  // sign in anon
+  // Sign in as an anonymous member
   Future signInAnon() async {
     try {
       AuthResult result = await _auth.signInAnonymously();
@@ -51,7 +51,7 @@ class AuthService {
     }
   }
 
-  // sign in with email & password
+  // Sign in with email & password
   Future signInWithEmailAndPassword(String email, String password) async {
     try {
       AuthResult result = await _auth.signInWithEmailAndPassword(
@@ -64,7 +64,7 @@ class AuthService {
     }
   }
 
-  // register with email & password
+  // Register with email & password
   Future registerWithEmailAndPassword(String email, String password) async {
     try {
       AuthResult result = await _auth.createUserWithEmailAndPassword(
@@ -102,6 +102,7 @@ class AuthService {
     }
   }
 
+  // Create an anonymous profile
   Profile createAnonProfile(index) {
     Profile prf = Profile(
         uid: index.toString(),
@@ -112,7 +113,7 @@ class AuthService {
     return prf;
   }
 
-  // sign out
+  // Sign out
   Future signOut() async {
     try {
       return await _auth.signOut();
@@ -122,6 +123,7 @@ class AuthService {
     }
   }
 
+  // Checks firebase status based on accessibility of data
   checkFireBaseStatus(snapshot) async {
     try {
       return snapshot.hasdata;

@@ -4,12 +4,15 @@ import 'package:OnceWing/screens/modes/game_home.dart';
 import 'package:OnceWing/screens/modes/match_history.dart';
 import 'package:OnceWing/services/database.dart';
 import 'package:OnceWing/services/game_database.dart';
-import 'package:OnceWing/shared/profile_list_mini.dart';
+import 'package:OnceWing/components/profile_widgets/profile_list_mini.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// Shows entire match history of current profile in a ListView
+/// Each ListView item is a Card containing a dated event
+
 class PlayerMatchHistory extends StatefulWidget {
-  String uid;
+  final String uid;
   PlayerMatchHistory({this.uid});
 
   @override
@@ -26,15 +29,17 @@ class _PlayerMatchHistoryState extends State<PlayerMatchHistory> {
             value: GameDatabaseService().gameDatas)
       ],
       child: Container(
-        padding: EdgeInsets.all(8.0),
         width: MediaQuery.of(context).size.width,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-                child: Text(
-              'Match History',
-              style: TextStyle(color: Color(0xffC49859), fontSize: 20),
-            )),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Match History',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
             SizedBox(height: 15),
             PlayerEvents(uid: widget.uid),
           ],
@@ -45,7 +50,7 @@ class _PlayerMatchHistoryState extends State<PlayerMatchHistory> {
 }
 
 class PlayerEvents extends StatefulWidget {
-  String uid;
+  final String uid;
   PlayerEvents({this.uid});
   @override
   _PlayerEventsState createState() => _PlayerEventsState();
@@ -83,70 +88,124 @@ class _PlayerEventsState extends State<PlayerEvents> {
             return Container(
               child: Card(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                    side: BorderSide(color: Colors.blue[100], width: 3)),
+                    borderRadius: BorderRadius.circular(10.0),
+                    side: BorderSide(color: Colors.blue[100], width: 0.1)),
                 elevation: 0.0,
-                color: Colors.transparent,
+                color: Colors.black.withOpacity(0.4),
                 borderOnForeground: true,
                 child: Container(
-                    child: ListTile(
-                  //----> ListTile for now (previously expansion)
-                  trailing: FlatButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (BuildContext context) => games[index].live
-                                ? EightsPage(
-                                    profiles: uidToProfiles(games[index].uids),
-                                    viewmode: true,
-                                    numOfCourts: games[index].numOfCourts,
-                                    numOfPlayers: games[index].uids.length,
-                                    numOfRounds: games[index].round,
-                                    gameid: games[index].gameid,
-                                    queueMap: games[index].upcomingGames,
-                                    queueFinishedMap:
-                                        games[index].finishedGames,
-                                    inGameUidsMap: games[index].inGame,
-                                    init: false,
-                                  )
-                                : MatchHistory(
-                                    gameid: games[index].gameid,
-                                    profiles: uidToProfiles(games[index].uids),
-                                    scores: games[index].scores)));
-                      },
-                      icon: Icon(Icons.remove_red_eye,
-                          color: !games[index].live
-                              ? Colors.blue[100]
-                              : Colors.red[300]),
-                      label: Text(
-                        !games[index].live ? 'View' : 'Live',
-                        style: TextStyle(
-                            color: !games[index].live
-                                ? Colors.blue[100]
-                                : Colors.red[300]),
-                      )),
-                  leading: Container(
-                    color: Colors.transparent,
-                    height: 35,
-                    width: 35,
-                    child: Image(image: AssetImage('assets/swordshield.png')),
-                  ),
-                  title: Text(
-                    '${games[index].date.year}-${games[index].date.month}-${games[index].date.day}',
-                    style: TextStyle(color: Colors.blue[100]),
-                  ),
-                  //     children: <Widget>[
-                  //   Container(
-                  //     width: 500,
-                  //     padding: EdgeInsets.symmetric(horizontal: 8),
-                  //     height: 250,
-                  //     child: MiniProfileList(
-                  //       showScore: games[index].live,
-                  //       profiles: uidToProfiles(games[index].uids),
-                  //       scores: games[index].scores,
-                  //     ), // live property not working index issue
-                  //   ),
-                  // ]
-                )),
+                    child: ExpansionTile(
+                        trailing: Container(
+                          width: 117,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              VerticalDivider(
+                                color: Colors.grey,
+                                indent: 10,
+                                endIndent: 10,
+                              ),
+                              FlatButton.icon(
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                games[index].live
+                                                    ? EightsPage(
+                                                        profiles: uidToProfiles(
+                                                            games[index].uids),
+                                                        viewmode: true,
+                                                        numOfCourts:
+                                                            games[index]
+                                                                .numOfCourts,
+                                                        numOfPlayers:
+                                                            games[index]
+                                                                .uids
+                                                                .length,
+                                                        numOfRounds:
+                                                            games[index].round,
+                                                        gameid:
+                                                            games[index].gameid,
+                                                        queueMap: games[index]
+                                                            .upcomingGames,
+                                                        queueFinishedMap:
+                                                            games[index]
+                                                                .finishedGames,
+                                                        inGameUidsMap:
+                                                            games[index].inGame,
+                                                        init: false,
+                                                      )
+                                                    : MatchHistory(
+                                                        gameid:
+                                                            games[index].gameid,
+                                                        profiles: uidToProfiles(
+                                                            games[index].uids),
+                                                        scores: games[index]
+                                                            .scores)));
+                                  },
+                                  icon: Icon(Icons.remove_red_eye,
+                                      color: !games[index].live
+                                          ? Colors.blue[100]
+                                          : Colors.red[300]),
+                                  label: Text(
+                                    !games[index].live ? 'View' : 'Live',
+                                    style: TextStyle(
+                                        color: !games[index].live
+                                            ? Colors.blue[100]
+                                            : Colors.red[300]),
+                                  )),
+                            ],
+                          ),
+                        ),
+                        leading: Container(
+                          padding: EdgeInsets.only(top: 8),
+                          width: 250,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    color: Colors.transparent,
+                                    height: 15,
+                                    width: 15,
+                                    child: Image(
+                                        image: AssetImage(
+                                            'assets/swordshield.png')),
+                                  ),
+                                  Text(
+                                      ' ${games[index].type}: ${games[index].date.year}-${games[index].date.month}-${games[index].date.day}',
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 14,
+                                      )),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                  '${games[index].uids.length}P Round Robin Doubles',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  )),
+                            ],
+                          ),
+                        ),
+                        title: Container(),
+                        children: <Widget>[
+                      Container(
+                        width: 500,
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        height: 250,
+                        child: MiniProfileList(
+                          showScore: games[index].live,
+                          profiles: uidToProfiles(games[index].uids),
+                          scores: games[index].scores,
+                        ), // live property not working index issue
+                      ),
+                    ])),
               ),
             );
           }),

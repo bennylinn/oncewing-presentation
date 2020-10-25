@@ -1,5 +1,4 @@
 import 'package:OnceWing/my_flutter_app_icons.dart';
-import 'package:OnceWing/shared/empty_container.dart';
 import 'package:flutter/material.dart';
 
 class Destination {
