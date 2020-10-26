@@ -6,8 +6,8 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
 
 class QR extends StatefulWidget {
-  Function callback;
-  String uid;
+  final Function callback;
+  final String uid;
   QR({this.callback, this.uid});
 
   @override

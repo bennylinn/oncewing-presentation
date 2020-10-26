@@ -4,12 +4,24 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
+/// Cloud Storage service for image and video uploads onto Firebase storage
+///
+/// *** many of these functions are unused, since videos were removed from
+/// *** the current version.
+
 class CloudStorageService {
   String uid;
   CloudStorageService({this.uid});
 
   final picker = ImagePicker();
 
+  /// Uploads an image file to Firebase Storage and returns the Future of a [CloudStorageResult] or [null]
+  ///
+  /// Filenames are generated based on milliseconds since Unix epoch
+  ///
+  /// If successfully uploaded, the following are set as attributes to a [CloudStorageResult]:
+  /// - [imageUrl] (String)
+  /// - [imageFileName] (String)
   Future<CloudStorageResult> uploadImage({
     @required File imageToUpload,
     @required String title,
@@ -161,8 +173,6 @@ class CloudStorageService {
       return result;
     } catch (error) {}
   }
-
-// I worked it out. The point is you have to specify the metadata content type manually like so.
 
   Future uploadHighlightVid() async {
     try {

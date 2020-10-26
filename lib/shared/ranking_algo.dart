@@ -66,7 +66,6 @@ elodif(game, side1wins) {
         side1wins,
       )[0] -
       average([game[0].rank, game[1].rank]);
-  // print(average([game[0].rank, game[1].rank]));
 
   return edif;
 }
@@ -80,7 +79,6 @@ elodifNumsOnly(listRank, side1wins) {
         side1wins,
       )[0] -
       average([listRank[0], listRank[1]]);
-  // print(average([game[0].rank, game[1].rank]));
 
   return edif;
 }

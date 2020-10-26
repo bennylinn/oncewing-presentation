@@ -33,39 +33,6 @@ class _AdminState extends State<Admin> {
                 .updateGroupData(
                     groupName, groupId, type, bio, gameIds, uids, managers, {});
           },
-        )
-
-        // return ListTile(
-        //   title: Text(p.name),
-        //   trailing: FlatButton(
-        //     child: Text('Update New Model'),
-        //     onPressed: () {
-        // DatabaseService(uid: p.uid).updateUserData(
-        //     p.uid,
-        //     p.clan,
-        //     p.name,
-        //     p.rank,
-        //     p.eights,
-        //     p.gamesPlayed,
-        //     'Online',
-        //     0,
-        //     '',
-        //     0,
-        //     '',
-        //     0,
-        //     0,
-        //     0,
-        //     0,
-        //     {},
-        //     500,
-        //     [],
-        //     '',
-        //     '',
-        //     {},
-        //     {});
-        //   },
-        // ),
-        // );
-        );
+        ));
   }
 }

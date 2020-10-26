@@ -1,10 +1,9 @@
 import 'package:OnceWing/models/user.dart';
 import 'package:OnceWing/shared/upload_images.dart';
-import 'package:OnceWing/shared/view_images.dart';
 import 'package:flutter/material.dart';
 
 class MultiUploader extends StatefulWidget {
-  UserData currentUserModel;
+  final UserData currentUserModel;
   MultiUploader({this.currentUserModel});
   @override
   _MyHomePageState createState() => _MyHomePageState();
